@@ -1,0 +1,19 @@
+# ==================== REQUIREMENTS.TXT ====================
+# Flask and related libraries
+Flask==2.3.3
+Flask-CORS==4.0.0
+python-dotenv==1.0.0
+
+# Database
+mysql-connector-python==8.1.0
+
+# Authentication and security
+PyJWT==2.8.1
+bcrypt==4.0.1
+Werkzeug==2.3.7
+
+# Data handling
+python-dateutil==2.8.2
+
+# Optional: For better MySQL performance
+# PyMySQL==1.1.0
