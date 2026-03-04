@@ -1,16 +1,166 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getAuth, postAuth } from "../api";
-import { getStoredUser } from "../authStorage";
+import { getStoredUser, saveUser } from "../authStorage";
 import TopNav from "../components/TopNav";
+
+const createEmptyFoodEntry = () => ({ meal_type: "Breakfast", food_item_name: "", quantity: "", unit: "grams" });
+const createFoodDay = (dayNumber) => ({
+  day_number: dayNumber,
+  entries: [createEmptyFoodEntry()],
+});
 
 const initialForm = {
   height: "",
   weight: "",
+  age: "",
+  gender: "",
   activity_level: "",
-  diet_type: "",
   sleep_hours: "",
-  stress_level: 5,
+  hydration_liters: "2.0",
+  food_days: [createFoodDay(1), createFoodDay(2)],
 };
+
+const MEAL_TYPES = ["Breakfast", "Lunch", "Dinner", "Snacks"];
+const UNIT_TYPES = ["grams", "units"];
+const FALLBACK_FOOD_OPTIONS = [
+  { name: "Oats", calories_per_100g: 389 },
+  { name: "Cooked Rice", calories_per_100g: 130 },
+  { name: "Roti", calories_per_100g: 297 },
+  { name: "Dal", calories_per_100g: 116 },
+  { name: "Paneer", calories_per_100g: 265 },
+  { name: "Tofu", calories_per_100g: 144 },
+  { name: "Egg", calories_per_100g: 155 },
+  { name: "Chicken Breast", calories_per_100g: 165 },
+  { name: "Fish", calories_per_100g: 206 },
+  { name: "Mixed Vegetables", calories_per_100g: 65 },
+  { name: "Salad", calories_per_100g: 35 },
+  { name: "Milk", calories_per_100g: 61 },
+  { name: "Curd", calories_per_100g: 98 },
+  { name: "Banana", calories_per_100g: 89 },
+  { name: "Apple", calories_per_100g: 52 },
+  { name: "Mixed Nuts", calories_per_100g: 607 },
+  { name: "Chips", calories_per_100g: 536 },
+  { name: "Sweets", calories_per_100g: 400 },
+  { name: "Soft Drink", calories_per_100g: 41 },
+  { name: "Burger", calories_per_100g: 295 },
+  { name: "Pizza", calories_per_100g: 266 },
+  { name: "Fries", calories_per_100g: 312 },
+  { name: "Biscuits", calories_per_100g: 502 },
+];
+
+const DIET_CLASSIFICATIONS = [
+  {
+    value: "Balanced",
+    label: "Balanced",
+    description: "Calorie intake is near your daily requirement (within ±10%).",
+    riskScore: 4,
+  },
+  {
+    value: "Slightly Imbalanced",
+    label: "Slightly Imbalanced",
+    description: "Intake is not optimal but not in high-risk calorie range.",
+    riskScore: 8,
+  },
+  {
+    value: "High Calorie Diet",
+    label: "High Calorie Diet",
+    description: "Daily intake is significantly above required calories (>20%).",
+    riskScore: 13,
+  },
+  {
+    value: "Low Calorie Diet",
+    label: "Low Calorie Diet",
+    description: "Daily intake is significantly below required calories (<-20%).",
+    riskScore: 11,
+  },
+  {
+    value: "High Sugar",
+    label: "High Sugar",
+    description: "Sugar-heavy foods exceed healthy daily threshold.",
+    riskScore: 14,
+  },
+  {
+    value: "High Fat",
+    label: "High Fat",
+    description: "Fat-heavy foods exceed healthy daily threshold.",
+    riskScore: 12,
+  },
+  {
+    value: "Low Protein",
+    label: "Low Protein",
+    description: "Protein intake is below daily requirement for body weight.",
+    riskScore: 10,
+  },
+  {
+    value: "Irregular Meals",
+    label: "Irregular Meals",
+    description: "Core meals (breakfast/lunch/dinner) are skipped or highly inconsistent.",
+    riskScore: 11,
+  },
+];
+
+const DIET_TYPE_LOOKUP = DIET_CLASSIFICATIONS.reduce((acc, item) => {
+  acc[item.value.toLowerCase()] = item;
+  return acc;
+}, {});
+
+function normalizeDietType(dietType) {
+  return String(dietType || "").toLowerCase().trim();
+}
+
+function getDietTypeInfo(dietType) {
+  const normalized = normalizeDietType(dietType);
+  return (
+    DIET_TYPE_LOOKUP[normalized] || {
+      value: "Unknown",
+      label: "General",
+      description: "General mixed pattern. Prefer whole foods, fiber, and adequate protein.",
+      riskScore: 8,
+    }
+  );
+}
+
+function litersToHydrationLevel(liters) {
+  const value = Number(liters || 0);
+  if (!Number.isFinite(value) || value <= 0) return 0;
+  return Math.max(1, Math.min(10, Math.round((value / 3) * 10)));
+}
+
+function hydrationLevelToLiters(level) {
+  const value = Number(level || 0);
+  if (!Number.isFinite(value) || value <= 0) return 0;
+  return Number(((value / 10) * 3).toFixed(1));
+}
+
+function getMissingFieldSummary(form) {
+  const missing = [];
+  if (!Number(form.height)) missing.push("Height");
+  if (!Number(form.weight)) missing.push("Weight");
+  if (!form.activity_level) missing.push("Activity Level");
+  if (!Number(form.age)) missing.push("Age");
+  if (!form.gender) missing.push("Gender");
+  if (!Number(form.sleep_hours)) missing.push("Sleep Hours");
+  if (!Number(form.hydration_liters) || Number(form.hydration_liters) <= 0) missing.push("Water Intake (L/day)");
+
+  const validDays = (form.food_days || []).filter((day) =>
+    (day.entries || []).some((item) => item.food_item_name && Number(item.quantity) > 0),
+  ).length;
+  const incompleteFoodRows = (form.food_days || []).reduce((count, day, dayIndex) => {
+    const rows = day.entries || [];
+    const dayHasAnyInput = rows.some((item) => item.food_item_name || Number(item.quantity) > 0);
+    const shouldValidateDay = dayIndex < 2 || dayHasAnyInput;
+    if (!shouldValidateDay) return count;
+    return count + rows.filter((item) => !item.food_item_name || !Number(item.quantity) || Number(item.quantity) <= 0).length;
+  }, 0);
+  if (validDays < 2) {
+    missing.push("Food intake for Day 1 and Day 2 (minimum)");
+  }
+  if (incompleteFoodRows > 0) {
+    missing.push(`Food rows (${incompleteFoodRows} incomplete)`);
+  }
+
+  return missing;
+}
 
 function getRiskClassName(riskLevel) {
   const normalized = String(riskLevel || "").toLowerCase().trim();
@@ -32,17 +182,48 @@ function getActivityScore(activityLevel) {
   if (value === "sedentary") return 16;
   if (value === "light") return 10;
   if (value === "moderate") return 5;
+  if (value === "active") return 3;
+  if (value === "very active") return 2;
   if (value === "high") return 2;
   return 8;
 }
 
 function getDietScore(dietType) {
-  const value = String(dietType || "").toLowerCase();
-  if (value === "high sugar") return 14;
-  if (value === "high fat") return 12;
-  if (value === "balanced") return 4;
-  if (value === "vegetarian") return 5;
-  return 8;
+  return getDietTypeInfo(dietType).riskScore;
+}
+
+function getDietInterpretation(dietType) {
+  const normalized = normalizeDietType(dietType);
+  if (normalized === "balanced") return "Intake aligns with requirement and supports stable metabolic health";
+  if (normalized === "slightly imbalanced") return "Mild mismatch between required and consumed calories";
+  if (normalized === "high calorie diet") return "Higher risk of weight gain and metabolic strain";
+  if (normalized === "low calorie diet") return "Higher risk of fatigue, poor recovery, and nutrient deficit";
+  if (normalized === "high sugar") return "Higher metabolic risk from sugar spikes and low satiety foods";
+  if (normalized === "high fat") return "Higher cardio-metabolic risk due to fat-heavy food choices";
+  if (normalized === "low protein") return "Recovery and muscle-maintenance risk due to protein gap";
+  if (normalized === "irregular meals") return "Energy and appetite instability due to inconsistent meal timing";
+  return "Moderate dietary risk pattern";
+}
+
+function getRiskBadgeClass(riskLevel) {
+  const normalized = String(riskLevel || "").toLowerCase();
+  if (normalized.includes("high")) return "badge danger";
+  if (normalized.includes("low")) return "badge success";
+  return "badge warning";
+}
+
+function getDietBadgeClass(dietType) {
+  const normalized = normalizeDietType(dietType);
+  if (normalized === "balanced") return "badge success";
+  if (normalized === "high calorie diet" || normalized === "high sugar" || normalized === "high fat") return "badge danger";
+  return "badge warning";
+}
+
+function getCalorieDeltaBadgeClass(delta) {
+  const value = Number(delta || 0);
+  if (value > 250) return "badge danger";
+  if (value < -250) return "badge warning";
+  return "badge success";
 }
 
 function getAssessmentInsights(assessment) {
@@ -50,19 +231,19 @@ function getAssessmentInsights(assessment) {
 
   const bmi = Number(assessment.bmi || 0);
   const sleepHours = Number(assessment.sleep_hours || 0);
-  const stressLevel = Number(assessment.stress_level || 0);
+  const hydrationLevel = Number(assessment.hydration_level || 0);
   const riskLevel = String(assessment.risk_level || "").toLowerCase();
 
   const baseRiskScore = riskLevel.includes("high") ? 60 : riskLevel.includes("medium") ? 40 : 20;
   const bmiRiskScore = bmi >= 30 || bmi < 18.5 ? 15 : bmi >= 25 ? 8 : 2;
   const sleepRiskScore = sleepHours < 5 ? 14 : sleepHours < 7 ? 8 : sleepHours <= 9 ? 3 : 9;
-  const stressRiskScore = stressLevel >= 8 ? 16 : stressLevel >= 6 ? 10 : stressLevel >= 4 ? 6 : 2;
+  const hydrationRiskScore = hydrationLevel < 4 ? 12 : hydrationLevel < 6 ? 6 : hydrationLevel < 8 ? 3 : 1;
   const activityRiskScore = getActivityScore(assessment.activity_level);
-  const dietRiskScore = getDietScore(assessment.diet_type);
+  const dietRiskScore = getDietScore(assessment.detected_diet_pattern || assessment.diet_type);
 
   const totalRisk = Math.min(
     95,
-    Math.round(baseRiskScore + bmiRiskScore + sleepRiskScore + stressRiskScore + activityRiskScore + dietRiskScore),
+    Math.round(baseRiskScore + bmiRiskScore + sleepRiskScore + hydrationRiskScore + activityRiskScore + dietRiskScore),
   );
 
   const severeOutcomeRisk = Math.min(40, Math.max(3, Math.round(totalRisk * 0.35)));
@@ -79,24 +260,41 @@ function getAssessmentInsights(assessment) {
 function getDietPlan(assessment, insights) {
   if (!assessment || !insights) return null;
 
-  const stressLevel = Number(assessment.stress_level || 0);
+  const hydrationLevel = Number(assessment.hydration_level || 0);
   const sleepHours = Number(assessment.sleep_hours || 0);
   const bmi = Number(assessment.bmi || 0);
   const activity = String(assessment.activity_level || "");
-  const currentDiet = String(assessment.diet_type || "");
+  const currentDiet = String(assessment.detected_diet_pattern || assessment.diet_type || "");
+  const currentDietNormalized = normalizeDietType(currentDiet);
+  const isBalanced = currentDietNormalized === "balanced";
+  const isHighCalorie = currentDietNormalized === "high calorie diet";
+  const isLowCalorie = currentDietNormalized === "low calorie diet";
+  const isHighSugar = currentDietNormalized === "high sugar";
+  const isHighFat = currentDietNormalized === "high fat";
+  const isLowProtein = currentDietNormalized === "low protein";
+  const isIrregularMeals = currentDietNormalized === "irregular meals";
 
   const focus = [];
-  if (bmi < 18.5) focus.push("Increase healthy calorie intake with protein-rich meals.");
-  if (bmi >= 25) focus.push("Create a mild calorie deficit and increase fiber intake.");
-  if (stressLevel >= 7) focus.push("Include magnesium-rich foods to support stress management.");
+  if (bmi < 18.5 || isLowCalorie) focus.push("Increase healthy calorie intake with protein-rich meals.");
+  if (bmi >= 25 || isHighCalorie) focus.push("Create a mild calorie deficit and increase fiber intake.");
+  if (hydrationLevel < 6) focus.push("Increase water intake and include hydrating foods like cucumber and watermelon.");
   if (sleepHours < 7) focus.push("Avoid heavy dinner and caffeine at night to improve sleep quality.");
   if (activity === "Sedentary") focus.push("Prefer lower sugar snacks and increase hydration throughout the day.");
+  if (isHighSugar) focus.push("Shift from sugary foods to low-GI carbs, fruit, and high-fiber snacks.");
+  if (isHighFat) focus.push("Reduce fried foods and prioritize healthy fats from nuts, seeds, and fish.");
+  if (isLowProtein) focus.push("Target protein in every meal from dal, curd, eggs, paneer, tofu, fish, or chicken.");
+  if (isIrregularMeals) focus.push("Set fixed meal windows and avoid skipping breakfast/lunch.");
+  if (isBalanced) focus.push("Maintain current intake quality and keep meal timings consistent.");
   if (focus.length === 0) focus.push("Maintain a balanced macro split with consistent meal timings.");
 
   const avoid = [];
-  if (currentDiet === "High Sugar") avoid.push("Sugary drinks, sweets, and refined flour snacks.");
-  if (currentDiet === "High Fat") avoid.push("Deep-fried foods and processed high-fat meals.");
-  if (stressLevel >= 7) avoid.push("Excess caffeine after 4 PM.");
+  if (isHighSugar) avoid.push("Sugary drinks, sweets, and refined flour snacks.");
+  if (isHighFat) avoid.push("Deep-fried foods and processed high-fat meals.");
+  if (isLowProtein) avoid.push("Carb-only meals without a protein source.");
+  if (isIrregularMeals) avoid.push("Skipping meals followed by overeating late at night.");
+  if (isHighCalorie) avoid.push("Large portion sizes, calorie-dense snacks, and repeated late-night eating.");
+  if (isLowCalorie) avoid.push("Long fasting gaps and low-volume meals with poor nutrient density.");
+  if (hydrationLevel < 6) avoid.push("Excess caffeine and diuretic drinks that can dehydrate.");
   if (sleepHours < 7) avoid.push("Late-night heavy meals.");
   if (avoid.length === 0) avoid.push("Highly processed packaged foods.");
 
@@ -104,31 +302,45 @@ function getDietPlan(assessment, insights) {
     {
       meal: "Breakfast",
       plan:
-        bmi >= 25
-          ? "Oats with chia seeds, 1 boiled egg or sprouts, and 1 fruit."
-          : "Peanut butter toast, milk/curd, mixed nuts, and 1 fruit.",
+        isIrregularMeals
+          ? "Quick fixed breakfast: overnight oats + nuts + fruit (eat within 1 hour of waking)."
+          : isLowProtein
+            ? "Protein breakfast: moong chilla/eggs + curd + fruit."
+            : bmi >= 25
+              ? "Oats with chia seeds, 1 boiled egg or sprouts, and 1 fruit."
+              : "Peanut butter toast, milk/curd, mixed nuts, and 1 fruit.",
     },
     {
       meal: "Mid-Morning",
-      plan: "Coconut water or buttermilk with roasted chana or almonds.",
+      plan:
+        isHighSugar || isHighCalorie
+          ? "Unsweetened buttermilk/green tea with roasted chana or almonds."
+          : "Coconut water or buttermilk with roasted chana or almonds.",
     },
     {
       meal: "Lunch",
       plan:
-        currentDiet === "Vegetarian"
-          ? "2 whole-grain rotis, dal/rajma/chole, mixed vegetable salad, curd."
+        isLowProtein
+          ? "2 whole-grain rotis, dal + paneer/tofu/chicken, mixed salad, curd."
           : "2 whole-grain rotis, grilled chicken/fish or dal, vegetables, curd.",
     },
     {
       meal: "Evening Snack",
-      plan: stressLevel >= 7 ? "Banana + handful of nuts + herbal tea." : "Fruit + nuts or paneer cubes.",
+      plan:
+        isHighSugar
+          ? "Apple/guava + nuts + unsweetened tea (skip biscuits and sweets)."
+          : hydrationLevel < 6
+            ? "Cucumber slices + watermelon + herbal tea."
+            : "Fruit + nuts or paneer cubes.",
     },
     {
       meal: "Dinner",
       plan:
-        sleepHours < 7
+        sleepHours < 7 || isIrregularMeals
           ? "Light dinner: soup + sauteed vegetables + protein (paneer/tofu/chicken)."
-          : "Balanced dinner: quinoa/brown rice + vegetables + protein.",
+          : isLowCalorie
+            ? "Energy-support dinner: quinoa/brown rice + dal/protein + vegetables + curd."
+            : "Balanced dinner: quinoa/brown rice + vegetables + protein.",
     },
   ];
 
@@ -139,15 +351,18 @@ function getFutureOutlook(assessment, insights) {
   if (!assessment || !insights) return null;
 
   const bmi = Number(assessment.bmi || 0);
-  const stress = Number(assessment.stress_level || 0);
+  const hydration = Number(assessment.hydration_level || 0);
   const sleep = Number(assessment.sleep_hours || 0);
   const activity = String(assessment.activity_level || "");
-  const diet = String(assessment.diet_type || "");
+  const diet = normalizeDietType(assessment.detected_diet_pattern || assessment.diet_type);
 
   const drawbackSignals = [
     {
       label: "Metabolic risk",
-      score: Math.min(100, Math.round(insights.totalRisk * 0.9 + (diet === "High Sugar" ? 10 : 0))),
+      score: Math.min(
+        100,
+        Math.round(insights.totalRisk * 0.9 + (diet === "high sugar" || diet === "high calorie diet" ? 10 : 0)),
+      ),
     },
     {
       label: "Weight instability",
@@ -155,15 +370,18 @@ function getFutureOutlook(assessment, insights) {
     },
     {
       label: "Sleep and recovery issue",
-      score: Math.min(100, Math.round((sleep < 7 ? 65 : 30) + (stress >= 7 ? 20 : 5))),
+      score: Math.min(100, Math.round((sleep < 7 ? 65 : 30) + (hydration < 6 ? 20 : 5) + (diet === "irregular meals" ? 8 : 0))),
     },
     {
-      label: "Stress burnout chance",
-      score: Math.min(100, Math.round(stress * 8 + (sleep < 7 ? 10 : 0))),
+      label: "Dehydration risk",
+      score: Math.min(100, Math.round((10 - hydration) * 8 + (sleep < 7 ? 10 : 0))),
     },
     {
       label: "Cardio strain",
-      score: Math.min(100, Math.round((diet === "High Fat" ? 60 : 35) + (activity === "Sedentary" ? 20 : 0))),
+      score: Math.min(
+        100,
+        Math.round(((diet === "high fat" || diet === "high calorie diet") ? 60 : 35) + (activity === "Sedentary" ? 20 : 0)),
+      ),
     },
   ];
 
@@ -176,7 +394,7 @@ function getFutureOutlook(assessment, insights) {
       period: "Next 1-3 months",
       message:
         avgDrawback >= 60
-          ? "Energy dips, cravings, and stress-linked sleep disturbance may increase."
+          ? "Energy dips, cravings, and hydration-related fatigue may increase."
           : "Mild fatigue and inconsistent recovery can start if habits stay unchanged.",
     },
     {
@@ -184,7 +402,7 @@ function getFutureOutlook(assessment, insights) {
       message:
         avgDrawback >= 60
           ? "Weight, blood sugar trend, and concentration issues may become more visible."
-          : "You may see gradual increase in risk markers and stress load.",
+          : "You may see gradual increase in risk markers and hydration issues.",
     },
     {
       period: "Next 6-12 months",
@@ -198,17 +416,41 @@ function getFutureOutlook(assessment, insights) {
   return { drawbackSignals, projected6Month, projected12Month, timeline };
 }
 
+function getRiskPieSegments(insights) {
+  if (!insights) {
+    return {
+      riskWithoutSevere: 0,
+      severeWithinRisk: 0,
+      healthy: 100,
+    };
+  }
+
+  const totalRisk = Math.max(0, Math.min(100, Number(insights.totalRisk || 0)));
+  const severe = Math.max(0, Math.min(100, Number(insights.severeOutcomeRisk || 0)));
+  const severeWithinRisk = Math.min(totalRisk, severe);
+  const riskWithoutSevere = Math.max(0, totalRisk - severeWithinRisk);
+  const healthy = Math.max(0, 100 - totalRisk);
+
+  return { riskWithoutSevere, severeWithinRisk, healthy };
+}
+
 export default function DashboardPage() {
   const [active, setActive] = useState("health-form");
   const [form, setForm] = useState(initialForm);
+  const [foodOptions, setFoodOptions] = useState([]);
   const [assessment, setAssessment] = useState(null);
   const [history, setHistory] = useState([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [pieHoverInfo, setPieHoverInfo] = useState(null);
+  const [feedbackNotifications, setFeedbackNotifications] = useState([]);
+  const [foodSearchLoading, setFoodSearchLoading] = useState(false);
+  const [searchFocusedKey, setSearchFocusedKey] = useState("");
+  const searchDebounceRef = useRef(null);
   const user = getStoredUser();
   const insights = getAssessmentInsights(assessment);
+  const riskPie = getRiskPieSegments(insights);
   const dietPlan = getDietPlan(assessment, insights);
   const futureOutlook = getFutureOutlook(assessment, insights);
 
@@ -233,8 +475,8 @@ export default function DashboardPage() {
     if (angle < 0) angle += 360;
     const anglePercent = (angle / 360) * 100;
 
-    const totalRiskEnd = insights.totalRisk;
-    const severeEnd = Math.min(100, insights.totalRisk + insights.severeOutcomeRisk);
+    const totalRiskEnd = riskPie.riskWithoutSevere;
+    const severeEnd = Math.min(100, riskPie.riskWithoutSevere + riskPie.severeWithinRisk);
 
     let segment = {
       label: "Healthy Share",
@@ -289,9 +531,150 @@ export default function DashboardPage() {
     }
   }
 
+  async function loadFoodOptions() {
+    try {
+      const data = await getAuth("/food-options");
+      const foods = Array.isArray(data.foods) && data.foods.length > 0 ? data.foods : FALLBACK_FOOD_OPTIONS;
+      setFoodOptions(foods);
+    } catch {
+      setFoodOptions(FALLBACK_FOOD_OPTIONS);
+    }
+  }
+
+  async function loadFeedbackNotifications() {
+    try {
+      const data = await getAuth("/my-feedback");
+      const feedback = Array.isArray(data.feedback) ? data.feedback : [];
+      setFeedbackNotifications(feedback);
+      const unreadCount = Number(data.unread_count || 0);
+      if (user?.token) {
+        saveUser({ ...user, unreadFeedbackCount: unreadCount });
+      }
+    } catch {
+      setFeedbackNotifications([]);
+    }
+  }
+
+  async function markFeedbackRead(feedbackId) {
+    try {
+      await postAuth(`/my-feedback/${feedbackId}/read`, {});
+      await loadFeedbackNotifications();
+    } catch {
+      // ignore read errors silently in UI
+    }
+  }
+
+  function updateFoodEntry(dayIndex, entryIndex, key, value) {
+    setForm((prev) => ({
+      ...prev,
+      food_days: prev.food_days.map((day, dIdx) => {
+        if (dIdx !== dayIndex) return day;
+        return {
+          ...day,
+          entries: day.entries.map((item, eIdx) => {
+            if (eIdx !== entryIndex) return item;
+            if (key === "meal_type") {
+              return { ...item, meal_type: value, food_item_name: "" };
+            }
+            return { ...item, [key]: value };
+          }),
+        };
+      }),
+    }));
+  }
+
+  function addFoodEntry(dayIndex) {
+    setForm((prev) => ({
+      ...prev,
+      food_days: prev.food_days.map((day, dIdx) => (
+        dIdx === dayIndex ? { ...day, entries: [...day.entries, createEmptyFoodEntry()] } : day
+      )),
+    }));
+  }
+
+  function removeFoodEntry(dayIndex, entryIndex) {
+    setForm((prev) => ({
+      ...prev,
+      food_days: prev.food_days.map((day, dIdx) => {
+        if (dIdx !== dayIndex) return day;
+        if (day.entries.length <= 1) return { ...day, entries: [createEmptyFoodEntry()] };
+        return { ...day, entries: day.entries.filter((_, eIdx) => eIdx !== entryIndex) };
+      }),
+    }));
+  }
+
+  function addFoodDay() {
+    setForm((prev) => ({
+      ...prev,
+      food_days: [...prev.food_days, createFoodDay(prev.food_days.length + 1)],
+    }));
+  }
+
+  function removeFoodDay(dayIndex) {
+    setForm((prev) => {
+      if (prev.food_days.length <= 2) return prev;
+      const updated = prev.food_days.filter((_, idx) => idx !== dayIndex)
+        .map((day, idx) => ({ ...day, day_number: idx + 1 }));
+      return { ...prev, food_days: updated };
+    });
+  }
+
+  function mergeFoodOptions(newFoods) {
+    if (!Array.isArray(newFoods) || newFoods.length === 0) return;
+    setFoodOptions((prev) => {
+      const merged = new Map(prev.map((food) => [String(food.name || "").toLowerCase(), food]));
+      newFoods.forEach((food) => {
+        const key = String(food?.name || "").toLowerCase().trim();
+        if (!key || merged.has(key)) return;
+        merged.set(key, {
+          name: food.name,
+          calories_per_100g: Number(food.calories_per_100g || 120),
+        });
+      });
+      return Array.from(merged.values());
+    });
+  }
+
+  async function searchFoodCatalog(query) {
+    const trimmed = String(query || "").trim();
+    if (trimmed.length < 2) return;
+
+    clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(async () => {
+      setFoodSearchLoading(true);
+      try {
+        const data = await getAuth(`/food-search?q=${encodeURIComponent(trimmed)}`);
+        mergeFoodOptions(data.foods || []);
+      } catch {
+        // Ignore search API failures and keep local food options.
+      } finally {
+        setFoodSearchLoading(false);
+      }
+    }, 250);
+  }
+
+  function getFoodSuggestions(query) {
+    const search = String(query || "").toLowerCase().trim();
+    const source = search
+      ? foodOptions.filter((food) => String(food.name || "").toLowerCase().includes(search))
+      : foodOptions;
+    return source.slice(0, 120);
+  }
+
   useEffect(() => {
+    setForm((prev) => ({
+      ...prev,
+      age: user?.age ? String(user.age) : prev.age,
+      gender: user?.gender || prev.gender,
+    }));
     loadResults();
     loadHistory();
+    loadFoodOptions();
+    loadFeedbackNotifications();
+  }, []);
+
+  useEffect(() => () => {
+    clearTimeout(searchDebounceRef.current);
   }, []);
 
   async function onSubmit(e) {
@@ -300,13 +683,42 @@ export default function DashboardPage() {
     setError(false);
     setMessage("Processing your assessment...");
     try {
+      const missingFields = getMissingFieldSummary(form);
+      if (missingFields.length > 0) {
+        throw new Error(`Please fill required fields: ${missingFields.join(", ")}`);
+      }
+
+      const normalizedFoodIntake = (form.food_days || [])
+        .flatMap((day) => (day.entries || []).map((item) => ({
+          day_number: Number(day.day_number),
+          meal_type: item.meal_type,
+          food_item_name: item.food_item_name,
+          quantity: Number(item.quantity),
+          unit: item.unit,
+        })))
+        .filter((item) => item.food_item_name && Number.isFinite(item.quantity) && item.quantity > 0);
+
+      if (normalizedFoodIntake.length === 0) {
+        throw new Error("Add at least one valid food intake entry.");
+      }
+
+      const validDayCount = new Set(normalizedFoodIntake.map((item) => item.day_number)).size;
+      if (validDayCount < 2) {
+        throw new Error("Adding Day 1 and Day 2 is mandatory. Please add valid food entries for at least 2 days.");
+      }
+
       const data = await postAuth("/submit-health-data", {
         height: Number(form.height),
         weight: Number(form.weight),
+        age: Number(form.age),
+        gender: form.gender,
         activity_level: form.activity_level,
-        diet_type: form.diet_type,
         sleep_hours: Number(form.sleep_hours),
-        stress_level: Number(form.stress_level),
+        hydration_level: litersToHydrationLevel(form.hydration_liters),
+        hydration_liters: Number(form.hydration_liters),
+        // Backward compatibility for older backend versions that still require diet_type.
+        diet_type: "Balanced",
+        daily_food_intake: normalizedFoodIntake,
       });
       setMessage("Assessment submitted successfully!");
       setAssessment(data.assessment);
@@ -314,7 +726,15 @@ export default function DashboardPage() {
       setActive("results");
     } catch (err) {
       setError(true);
-      setMessage(err.message || "Failed to submit health data");
+      if (String(err.message || "").trim().toLowerCase() === "missing required fields") {
+        const missingFields = getMissingFieldSummary(form);
+        setMessage(
+          `Please fill required fields: ${missingFields.join(", ") || "Check all inputs"}`
+          + `${missingFields.length === 0 ? " (If fields are filled, restart backend to load new diet-tracker API.)" : ""}`,
+        );
+      } else {
+        setMessage(err.message || "Failed to submit health data");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -343,6 +763,39 @@ export default function DashboardPage() {
           {active === "health-form" ? (
             <div className="section active">
               <h2>Health & Lifestyle Assessment</h2>
+              {feedbackNotifications.length > 0 ? (
+                <div className="future-impact-display">
+                  <h3>Admin Feedback Notifications</h3>
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>From</th>
+                        <th>Feedback</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {feedbackNotifications.slice(0, 5).map((item) => (
+                        <tr key={item.id}>
+                          <td>{new Date(item.created_at).toLocaleString()}</td>
+                          <td>{item.admin_name || "Admin"}</td>
+                          <td>{item.feedback_text}</td>
+                          <td>{Number(item.is_read) === 1 ? "Read" : "Unread"}</td>
+                          <td>
+                            {Number(item.is_read) === 1 ? "-" : (
+                              <button className="btn btn-outline" type="button" onClick={() => markFeedbackRead(item.id)}>
+                                Mark Read
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : null}
               <form onSubmit={onSubmit}>
                 <div className="form-row">
                   <div className="form-group">
@@ -362,19 +815,28 @@ export default function DashboardPage() {
                       <option value="Sedentary">Sedentary (No exercise)</option>
                       <option value="Light">Light (1-3 days/week)</option>
                       <option value="Moderate">Moderate (3-5 days/week)</option>
-                      <option value="High">High (6-7 days/week)</option>
+                      <option value="High">Active (6-7 days/week)</option>
+                      <option value="Very Active">Very Active (Physical job + exercise)</option>
                     </select>
                   </div>
                   <div className="form-group">
-                    <label>Diet Type:</label>
-                    <select required value={form.diet_type} onChange={(e) => setForm({ ...form, diet_type: e.target.value })}>
-                      <option value="">Select Diet Type</option>
-                      <option value="Balanced">Balanced</option>
-                      <option value="High Sugar">High Sugar</option>
-                      <option value="High Fat">High Fat</option>
-                      <option value="Vegetarian">Vegetarian</option>
-                    </select>
+                    <label>Age (years):</label>
+                    <input type="number" min="10" max="100" required value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} />
                   </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Gender:</label>
+                    <select required value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })}>
+                      <option value="">Select Gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                    </select>
+                    <small className="input-helper">
+                      Used for BMR-based required calorie calculation.
+                    </small>
+                  </div>
+                  <div className="form-group" />
                 </div>
                 <div className="form-row">
                   <div className="form-group">
@@ -382,16 +844,112 @@ export default function DashboardPage() {
                     <input type="number" min="2" max="12" step="0.5" required value={form.sleep_hours} onChange={(e) => setForm({ ...form, sleep_hours: e.target.value })} />
                   </div>
                   <div className="form-group">
-                    <label>Stress Level (1-10):</label>
+                    <label>Water Intake (Liters/Day):</label>
                     <input
-                      type="range"
-                      min="1"
+                      type="number"
+                      min="0.1"
                       max="10"
-                      value={form.stress_level}
-                      onChange={(e) => setForm({ ...form, stress_level: e.target.value })}
+                      step="0.1"
+                      required
+                      value={form.hydration_liters}
+                      onChange={(e) => setForm({ ...form, hydration_liters: e.target.value })}
                     />
-                    <span id="stressValue">{form.stress_level}</span>
+                    <small className="input-helper">Enter daily water intake in liters (example: 2.5)</small>
                   </div>
+                </div>
+
+                <div className="food-intake-block">
+                  <h3>Daily Food Intake Tracker</h3>
+                  <p className="diet-summary">
+                    Add all meals for Day 1 and Day 2 (minimum required). Search and enter foods with quantity.
+                  </p>
+                  {form.food_days.map((day, dayIdx) => (
+                    <div className="food-day-block" key={`food-day-${day.day_number}`}>
+                      <div className="food-day-header">
+                        <h4>{`Day ${day.day_number}`}</h4>
+                        <div className="food-day-actions">
+                          <button className="btn btn-secondary" type="button" onClick={() => addFoodEntry(dayIdx)}>
+                            + Add Food Item
+                          </button>
+                          <button
+                            className="btn btn-danger"
+                            type="button"
+                            onClick={() => removeFoodDay(dayIdx)}
+                            disabled={form.food_days.length <= 2}
+                          >
+                            Remove Day
+                          </button>
+                        </div>
+                      </div>
+                      <div className="food-intake-head">
+                        <span>Meal</span>
+                        <span>Food Item</span>
+                        <span>Quantity</span>
+                        <span>Unit</span>
+                        <span>Action</span>
+                      </div>
+                      {day.entries.map((item, idx) => {
+                        const rowKey = `${dayIdx}-${idx}`;
+                        const suggestions = getFoodSuggestions(item.food_item_name);
+                        return (
+                          <div className="food-intake-row" key={`food-entry-${day.day_number}-${idx}`}>
+                            <select value={item.meal_type} onChange={(e) => updateFoodEntry(dayIdx, idx, "meal_type", e.target.value)} aria-label={`Meal type for day ${day.day_number} row ${idx + 1}`}>
+                              {MEAL_TYPES.map((mealType) => (
+                                <option key={mealType} value={mealType}>
+                                  {mealType}
+                                </option>
+                              ))}
+                            </select>
+                            <div className="food-search-wrap">
+                              <input
+                                type="search"
+                                list={`food-search-list-${rowKey}`}
+                                value={item.food_item_name}
+                                onFocus={() => setSearchFocusedKey(rowKey)}
+                                onBlur={() => setSearchFocusedKey("")}
+                                onChange={(e) => {
+                                  updateFoodEntry(dayIdx, idx, "food_item_name", e.target.value);
+                                  searchFoodCatalog(e.target.value);
+                                }}
+                                placeholder="Search food (global) and select"
+                                aria-label={`Food item for day ${day.day_number} row ${idx + 1}`}
+                              />
+                              <datalist id={`food-search-list-${rowKey}`}>
+                                {suggestions.map((food) => (
+                                  <option key={`${rowKey}-${food.name}`} value={food.name}>
+                                    {`${food.name} (${food.calories_per_100g} kcal/100g)`}
+                                  </option>
+                                ))}
+                              </datalist>
+                              {searchFocusedKey === rowKey && foodSearchLoading ? <small>Searching more foods...</small> : null}
+                            </div>
+                            <input
+                              type="number"
+                              min="1"
+                              step="0.1"
+                              value={item.quantity}
+                              onChange={(e) => updateFoodEntry(dayIdx, idx, "quantity", e.target.value)}
+                              placeholder="Qty"
+                              aria-label={`Food quantity for day ${day.day_number} row ${idx + 1}`}
+                            />
+                            <select value={item.unit} onChange={(e) => updateFoodEntry(dayIdx, idx, "unit", e.target.value)} aria-label={`Food unit for day ${day.day_number} row ${idx + 1}`}>
+                              {UNIT_TYPES.map((unitType) => (
+                                <option key={unitType} value={unitType}>
+                                  {unitType}
+                                </option>
+                              ))}
+                            </select>
+                            <button className="btn btn-danger" type="button" onClick={() => removeFoodEntry(dayIdx, idx)} aria-label={`Remove food row ${idx + 1} for day ${day.day_number}`}>
+                              Remove
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ))}
+                  <button className="btn btn-secondary add-food-btn" type="button" onClick={addFoodDay}>
+                    + Add Another Day
+                  </button>
                 </div>
                 <button className="btn btn-primary" type="submit" disabled={submitting}>
                   {submitting ? "Processing..." : "Submit & Get Risk Assessment"}
@@ -416,6 +974,27 @@ export default function DashboardPage() {
                       Risk Score: {typeof assessment.risk_score === "number" ? assessment.risk_score.toFixed(2) : `${insights.totalRisk.toFixed(2)} (estimated)`}
                     </div>
                   </div>
+                  <div className="kpi-grid">
+                    <article className="kpi-card">
+                      <span>Required Calories</span>
+                      <strong>{Number(assessment.required_calories || 0).toFixed(0)} kcal</strong>
+                    </article>
+                    <article className="kpi-card">
+                      <span>Avg Intake / Day</span>
+                      <strong>{Number(assessment.avg_calories_per_day || assessment.total_calories || 0).toFixed(0)} kcal</strong>
+                    </article>
+                    <article className="kpi-card">
+                      <span>Calorie Difference</span>
+                      <strong>
+                        {Number(assessment.calorie_difference || 0) > 0 ? "+" : ""}
+                        {Number(assessment.calorie_difference || 0).toFixed(0)} kcal
+                      </strong>
+                    </article>
+                    <article className="kpi-card">
+                      <span>Diet Classification</span>
+                      <strong>{assessment.detected_diet_pattern || assessment.diet_type}</strong>
+                    </article>
+                  </div>
                   <div className="risk-visualization">
                     <h3>Risk & Outcome Prediction</h3>
                     <div className="risk-chart-wrap">
@@ -423,9 +1002,9 @@ export default function DashboardPage() {
                         className="risk-pie"
                         style={{
                           background: `conic-gradient(
-                            #ef4444 0% ${insights.totalRisk}%,
-                            #f97316 ${insights.totalRisk}% ${Math.min(100, insights.totalRisk + insights.severeOutcomeRisk)}%,
-                            #22c55e ${Math.min(100, insights.totalRisk + insights.severeOutcomeRisk)}% 100%
+                            #ef4444 0% ${riskPie.riskWithoutSevere}%,
+                            #f97316 ${riskPie.riskWithoutSevere}% ${Math.min(100, riskPie.riskWithoutSevere + riskPie.severeWithinRisk)}%,
+                            #22c55e ${Math.min(100, riskPie.riskWithoutSevere + riskPie.severeWithinRisk)}% 100%
                           )`,
                         }}
                         aria-label="Risk and outcome pie chart"
@@ -485,9 +1064,9 @@ export default function DashboardPage() {
                           <td>{Number(assessment.sleep_hours) < 7 ? "Below ideal range" : "Within preferred range"}</td>
                         </tr>
                         <tr>
-                          <td>Stress Level</td>
-                          <td>{assessment.stress_level}/10</td>
-                          <td>{Number(assessment.stress_level) >= 7 ? "High stress load" : "Manageable stress load"}</td>
+                          <td>Water Intake</td>
+                          <td>{Number(assessment.hydration_liters || hydrationLevelToLiters(assessment.hydration_level)).toFixed(1)} L/day</td>
+                          <td>{Number(assessment.hydration_level) < 6 ? "Low hydration risk" : "Adequate hydration"}</td>
                         </tr>
                         <tr>
                           <td>Activity</td>
@@ -495,13 +1074,42 @@ export default function DashboardPage() {
                           <td>{assessment.activity_level === "Sedentary" ? "Low movement pattern" : "Active movement pattern"}</td>
                         </tr>
                         <tr>
-                          <td>Diet</td>
-                          <td>{assessment.diet_type}</td>
-                          <td>{assessment.diet_type === "High Sugar" || assessment.diet_type === "High Fat" ? "Higher dietary risk" : "Lower dietary risk"}</td>
+                          <td>Diet Classification</td>
+                          <td>
+                            <span className={getDietBadgeClass(assessment.detected_diet_pattern || assessment.diet_type)}>
+                              {assessment.detected_diet_pattern || assessment.diet_type}
+                            </span>
+                          </td>
+                          <td>{getDietInterpretation(assessment.detected_diet_pattern || assessment.diet_type)}</td>
+                        </tr>
+                        <tr>
+                          <td>Required Calories</td>
+                          <td>{Number(assessment.required_calories || 0).toFixed(0)} kcal/day</td>
+                          <td>Estimated using BMR + activity factor</td>
+                        </tr>
+                        <tr>
+                          <td>Actual Intake</td>
+                          <td>{Number(assessment.avg_calories_per_day || assessment.total_calories || 0).toFixed(0)} kcal/day</td>
+                          <td>Average intake calculated across all entered days</td>
+                        </tr>
+                        <tr>
+                          <td>Calorie Difference</td>
+                          <td>
+                            <span className={getCalorieDeltaBadgeClass(assessment.calorie_difference)}>
+                              {Number(assessment.calorie_difference || 0) > 0 ? "+" : ""}
+                              {Number(assessment.calorie_difference || 0).toFixed(0)} kcal/day
+                            </span>
+                          </td>
+                          <td>Positive means excess intake, negative means deficit</td>
+                        </tr>
+                        <tr>
+                          <td>Health Risk Impact</td>
+                          <td>{getDietInterpretation(assessment.detected_diet_pattern || assessment.diet_type)}</td>
+                          <td>Diet pattern contribution to current risk score</td>
                         </tr>
                         <tr>
                           <td>Final Risk Level</td>
-                          <td>{assessment.risk_level}</td>
+                          <td><span className={getRiskBadgeClass(assessment.risk_level)}>{assessment.risk_level}</span></td>
                           <td>Model prediction</td>
                         </tr>
                         <tr>
@@ -511,47 +1119,6 @@ export default function DashboardPage() {
                           </td>
                           <td>Numerical model score (0-100)</td>
                         </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className="diet-plan-display">
-                    <h3>Recommended Diet Plan</h3>
-                    <p className="diet-summary">
-                      Designed from your current inputs: BMI {Number(assessment.bmi).toFixed(2)}, {assessment.activity_level} activity,
-                      {` ${assessment.sleep_hours}`} hours sleep, stress {assessment.stress_level}/10, and {assessment.diet_type} diet.
-                    </p>
-                    <div className="diet-grid">
-                      <div className="diet-card">
-                        <h4>Focus Areas</h4>
-                        <ul>
-                          {dietPlan.focus.map((item, idx) => (
-                            <li key={`focus-${idx}`}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="diet-card">
-                        <h4>Limit / Avoid</h4>
-                        <ul>
-                          {dietPlan.avoid.map((item, idx) => (
-                            <li key={`avoid-${idx}`}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                    <table className="metrics-table meal-plan-table">
-                      <thead>
-                        <tr>
-                          <th>Meal Time</th>
-                          <th>Suggested Plan</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {dietPlan.mealPlan.map((item, idx) => (
-                          <tr key={`meal-${idx}`}>
-                            <td>{item.meal}</td>
-                            <td>{item.plan}</td>
-                          </tr>
-                        ))}
                       </tbody>
                     </table>
                   </div>
@@ -600,6 +1167,48 @@ export default function DashboardPage() {
                       ))}
                     </div>
                   </div>
+                  <div className="diet-plan-display">
+                    <h3>Recommended Diet Plan</h3>
+                    <p className="diet-summary">
+                      Designed from your current inputs: BMI {Number(assessment.bmi).toFixed(2)}, {assessment.activity_level} activity,
+                      {` ${assessment.sleep_hours}`} hours sleep, water intake {Number(assessment.hydration_liters || hydrationLevelToLiters(assessment.hydration_level)).toFixed(1)} L/day, and detected pattern {assessment.detected_diet_pattern || assessment.diet_type}.
+                      {` `}({getDietTypeInfo(assessment.detected_diet_pattern || assessment.diet_type).description})
+                    </p>
+                    <div className="diet-grid">
+                      <div className="diet-card">
+                        <h4>Focus Areas</h4>
+                        <ul>
+                          {dietPlan.focus.map((item, idx) => (
+                            <li key={`focus-${idx}`}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="diet-card">
+                        <h4>Limit / Avoid</h4>
+                        <ul>
+                          {dietPlan.avoid.map((item, idx) => (
+                            <li key={`avoid-${idx}`}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    <table className="metrics-table meal-plan-table">
+                      <thead>
+                        <tr>
+                          <th>Meal Time</th>
+                          <th>Suggested Plan</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {dietPlan.mealPlan.map((item, idx) => (
+                          <tr key={`meal-${idx}`}>
+                            <td>{item.meal}</td>
+                            <td>{item.plan}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </div>
@@ -614,14 +1223,16 @@ export default function DashboardPage() {
                     <th>Date</th>
                     <th>Risk Level</th>
                     <th>BMI</th>
+                    <th>Diet Class</th>
+                    <th>Calories (Act/Req)</th>
                     <th>Sleep Hours</th>
-                    <th>Stress Level</th>
+                    <th>Water Intake</th>
                   </tr>
                 </thead>
                 <tbody>
                   {history.length === 0 ? (
                     <tr>
-                      <td colSpan="5" className="no-data">
+                      <td colSpan="7" className="no-data">
                         No history available yet.
                       </td>
                     </tr>
@@ -629,10 +1240,14 @@ export default function DashboardPage() {
                     history.map((entry, idx) => (
                       <tr key={`${entry.date}-${idx}`}>
                         <td>{new Date(entry.date).toLocaleDateString()}</td>
-                        <td>{entry.risk_level}</td>
+                        <td><span className={getRiskBadgeClass(entry.risk_level)}>{entry.risk_level}</span></td>
                         <td>{Number(entry.bmi).toFixed(2)}</td>
+                        <td><span className={getDietBadgeClass(entry.detected_diet_pattern || entry.diet_type)}>{entry.detected_diet_pattern || entry.diet_type}</span></td>
+                        <td>
+                          {Number(entry.total_calories || 0).toFixed(0)}/{Number(entry.required_calories || 0).toFixed(0)}
+                        </td>
                         <td>{entry.sleep_hours}</td>
-                        <td>{entry.stress_level}/10</td>
+                        <td>{Number(entry.hydration_liters || hydrationLevelToLiters(entry.hydration_level)).toFixed(1)} L/day</td>
                       </tr>
                     ))
                   )}

@@ -1,0 +1,26 @@
+
+============================================================
+Student Health Risk Prediction System
+============================================================
+
+Quick login mode enabled (database skipped)
+Username: student
+Password: student123
+
+============================================================
+✓ System ready!
+============================================================
+
+Server running at: http://localhost:5000
+Frontend URL: file:///path/to/frontend/index.html
+
+API Documentation:
+  - Health Check: GET /api/health
+  - Register: POST /api/register
+  - Login: POST /api/login
+  - Submit Health Data: POST /api/submit-health-data
+  - Get Health Data: GET /api/get-health-data
+  - Get History: GET /api/get-history
+============================================================
+
+Listening on port 5000

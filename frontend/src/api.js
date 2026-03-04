@@ -5,14 +5,24 @@ async function request(path, options = {}, timeoutMs = 10000) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetch(`${API_BASE_URL}${path}`, {
-      ...options,
-      signal: controller.signal,
-    });
+    let res;
+    try {
+      res = await fetch(`${API_BASE_URL}${path}`, {
+        ...options,
+        signal: controller.signal,
+      });
+    } catch (cause) {
+      const error = new Error("Cannot reach backend API. Check server is running and API URL/port is correct.");
+      error.cause = cause;
+      throw error;
+    }
+
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      const error = new Error(data.message || "Request failed");
+      const message = data.message || res.statusText || "Request failed";
+      const error = new Error(`[${res.status}] ${message}`);
       error.status = res.status;
+      error.response = data;
       throw error;
     }
     return data;
@@ -55,4 +65,3 @@ export function deleteAuth(path) {
     headers: { Authorization: `Bearer ${token}` },
   });
 }
-

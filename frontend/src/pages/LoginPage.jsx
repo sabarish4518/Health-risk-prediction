@@ -5,10 +5,10 @@ import { saveUser } from "../authStorage";
 import TopNav from "../components/TopNav";
 
 export default function LoginPage() {
+  const [userType, setUserType] = useState("student");
   const [form, setForm] = useState({
     username: "student",
     password: "student123",
-    user_type: "student",
   });
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
@@ -19,16 +19,19 @@ export default function LoginPage() {
     setError(false);
     setMessage("Logging in...");
     try {
-      const data = await postPublic("/login", form);
+      const data = await postPublic("/login", { ...form, user_type: userType });
       saveUser({
         token: data.token,
         userId: data.user_id,
         username: data.username,
         fullName: data.full_name || data.username,
-        userType: data.user_type || form.user_type,
+        age: data.age ?? null,
+        gender: data.gender || "",
+        userType: data.user_type || userType,
+        unreadFeedbackCount: Number(data.unread_feedback_count || 0),
       });
       setMessage("Login successful");
-      navigate((data.user_type || form.user_type) === "admin" ? "/admin" : "/dashboard");
+      navigate((data.user_type || userType) === "admin" ? "/admin-dashboard" : "/dashboard");
     } catch (err) {
       setError(true);
       setMessage(err.message || "Login failed");
@@ -40,7 +43,29 @@ export default function LoginPage() {
       <TopNav />
       <div className="auth-container">
         <div className="auth-box">
-          <h2>Login</h2>
+          <h2>{userType === "admin" ? "Admin Login" : "Student Login"}</h2>
+          <div className="mode-toggle">
+            <button
+              type="button"
+              className={`mode-btn ${userType === "student" ? "active" : ""}`}
+              onClick={() => {
+                setUserType("student");
+                setForm({ username: "student", password: "student123" });
+              }}
+            >
+              Student
+            </button>
+            <button
+              type="button"
+              className={`mode-btn ${userType === "admin" ? "active" : ""}`}
+              onClick={() => {
+                setUserType("admin");
+                setForm({ username: "admin", password: "admin123" });
+              }}
+            >
+              Admin
+            </button>
+          </div>
           <form onSubmit={onSubmit}>
             <div className="form-group">
               <label>Username:</label>
@@ -59,23 +84,15 @@ export default function LoginPage() {
                 required
               />
             </div>
-            <div className="form-group">
-              <label>Login as:</label>
-              <select
-                value={form.user_type}
-                onChange={(e) => setForm({ ...form, user_type: e.target.value })}
-              >
-                <option value="student">Student</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
             <button className="btn btn-primary full-width" type="submit">
-              Login
+              {userType === "admin" ? "Login as Admin" : "Login as Student"}
             </button>
           </form>
-          <p className="auth-link">
-            No account? <Link to="/register">Register</Link>
-          </p>
+          {userType === "student" ? (
+            <p className="auth-link">
+              No account? <Link to="/register">Register</Link>
+            </p>
+          ) : null}
           {message ? <div className={`message ${error ? "error" : "success"}`}>{message}</div> : null}
         </div>
       </div>
@@ -85,4 +102,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

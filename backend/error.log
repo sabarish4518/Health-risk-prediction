@@ -1,0 +1,242 @@
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+Error in submit_health_data: ReferenceError: stressRisk is not defined
+    at HealthRiskPredictor.predictRiskLevel (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\model.js:151:9)
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:276:38
+    at C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:43:21
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at tokenRequired (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\app.js:67:5)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\sabar\OneDrive\Documents\full project\Student-Health-Risk-Prediction-System\backend\node_modules\express\lib\router\layer.js:95:5)

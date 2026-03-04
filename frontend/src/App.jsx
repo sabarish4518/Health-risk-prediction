@@ -6,13 +6,13 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 
-function ProtectedRoute({ children, adminOnly = false }) {
+function ProtectedRoute({ children, requiredRole }) {
   const user = getStoredUser();
   if (!user?.token) {
     return <Navigate to="/login" replace />;
   }
-  if (adminOnly && user.userType !== "admin") {
-    return <Navigate to="/dashboard" replace />;
+  if (requiredRole && user.userType !== requiredRole) {
+    return <Navigate to={user.userType === "admin" ? "/admin-dashboard" : "/dashboard"} replace />;
   }
   return children;
 }
@@ -26,15 +26,15 @@ export default function App() {
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="student">
             <DashboardPage />
           </ProtectedRoute>
         }
       />
       <Route
-        path="/admin"
+        path="/admin-dashboard"
         element={
-          <ProtectedRoute adminOnly>
+          <ProtectedRoute requiredRole="admin">
             <AdminPage />
           </ProtectedRoute>
         }

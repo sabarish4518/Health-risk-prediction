@@ -50,7 +50,7 @@
 │  │ full_name,   │ activity_    │              │             │
 │  │ age, gender  │ level, diet, │              │             │
 │  │ created_at   │ sleep_hours, │              │             │
-│  │              │ stress_level,│              │             │
+│  │              │ hydration_level,│              │             │
 │  │              │ risk_level,  │              │             │
 │  │              │ created_at   │              │             │
 │  └──────────────┴──────────────┴──────────────┘             │
@@ -224,10 +224,10 @@
 - **Prediction Logic**:
   - **BMI Calculation**: weight / (height²)
   - **Risk Scoring** (Weighted):
-    - BMI: 30% weight
+    - BMI: 25% weight
     - Sleep: 20% weight
     - Activity: 20% weight
-    - Stress: 15% weight
+    - Hydration: 20% weight
     - Diet: 15% weight
   - **Classification**:
     - Low Risk: < 25
@@ -237,7 +237,7 @@
   - `evaluate_bmi_risk()` - BMI score
   - `evaluate_sleep_risk()` - Sleep quality
   - `evaluate_activity_risk()` - Exercise level
-  - `evaluate_stress_risk()` - Mental health
+  - `evaluate_hydration_risk()` - Water intake
   - `evaluate_diet_risk()` - Nutrition quality
 - **Features**:
   - Detailed factor breakdown
@@ -328,7 +328,7 @@ CREATE TABLE health_data (
     activity_level VARCHAR(50) NOT NULL,
     diet_type VARCHAR(50) NOT NULL,
     sleep_hours FLOAT NOT NULL,
-    stress_level INT NOT NULL,
+    hydration_level INT NOT NULL,
     risk_level VARCHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
@@ -409,7 +409,7 @@ CREATE TABLE admin (
     "activity_level": "Moderate",
     "diet_type": "Balanced",
     "sleep_hours": 7.5,
-    "stress_level": 5
+    "hydration_level": 5
   }
   ```
 - **Response**: 201 Created with assessment

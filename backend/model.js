@@ -56,23 +56,25 @@ class HealthRiskPredictor {
             'Sedentary': 60,
             'Light': 35,
             'Moderate': 15,
-            'High': 5
+            'Active': 8,
+            'High': 5,
+            'Very Active': 4
         };
         return activityRisk[activityLevel] || 40;
     }
     
     /**
-     * Evaluate risk based on stress level (1-10 scale)
+     * Evaluate risk based on hydration level (1-10 scale)
      */
-    evaluateStressRisk(stressLevel) {
-        if (stressLevel <= 3) {
-            return 10; // Low stress
-        } else if (stressLevel >= 4 && stressLevel <= 5) {
-            return 30; // Moderate stress
-        } else if (stressLevel >= 6 && stressLevel <= 7) {
-            return 50; // High stress
+    evaluateHydrationRisk(hydrationLevel) {
+        if (hydrationLevel >= 8) {
+            return 10; // Well hydrated
+        } else if (hydrationLevel >= 6 && hydrationLevel <= 7) {
+            return 30; // Moderately hydrated
+        } else if (hydrationLevel >= 4 && hydrationLevel <= 5) {
+            return 50; // Low hydration
         } else {
-            return 70; // Very high stress
+            return 70; // Very low hydration
         }
     }
     
@@ -82,9 +84,14 @@ class HealthRiskPredictor {
     evaluateDietRisk(dietType) {
         const dietRisk = {
             'Balanced': 15,
+            'Slightly Imbalanced': 28,
+            'High Calorie Diet': 52,
+            'Low Calorie Diet': 45,
             'High Sugar': 55,
             'High Fat': 50,
-            'Vegetarian': 10
+            'Low Protein': 42,
+            'Irregular Meals': 45,
+            'Vegetarian': 12
         };
         return dietRisk[dietType] || 40;
     }
@@ -101,7 +108,7 @@ class HealthRiskPredictor {
         const bmiRisk = this.evaluateBmiRisk(bmi);
         const sleepRisk = this.evaluateSleepRisk(healthData.sleep_hours);
         const activityRisk = this.evaluateActivityRisk(healthData.activity_level);
-        const stressRisk = this.evaluateStressRisk(healthData.stress_level);
+        const hydrationRisk = this.evaluateHydrationRisk(healthData.hydration_level);
         const dietRisk = this.evaluateDietRisk(healthData.diet_type);
         
         // Store factors for reference
@@ -110,17 +117,17 @@ class HealthRiskPredictor {
             bmi_risk: bmiRisk,
             sleep_risk: sleepRisk,
             activity_risk: activityRisk,
-            stress_risk: stressRisk,
+            hydration_risk: hydrationRisk,
             diet_risk: dietRisk
         };
         
         // Calculate weighted base score
-        // Weights: BMI(25%), Sleep(20%), Activity(20%), Stress(20%), Diet(15%)
+        // Weights: BMI(25%), Sleep(20%), Activity(20%), Hydration(20%), Diet(15%)
         const baseRisk = (
             (bmiRisk * 0.25) +
             (sleepRisk * 0.20) +
             (activityRisk * 0.20) +
-            (stressRisk * 0.20) +
+            (hydrationRisk * 0.20) +
             (dietRisk * 0.15)
         );
 
@@ -141,7 +148,7 @@ class HealthRiskPredictor {
             penalty += 7;
             poorFactorCount += 1;
         }
-        if (stressRisk >= 50) {
+        if (hydrationRisk >= 50) {
             penalty += 8;
             poorFactorCount += 1;
         }
@@ -158,7 +165,7 @@ class HealthRiskPredictor {
         if (bmiRisk <= 15) goodFactorCount += 1;
         if (sleepRisk <= 15) goodFactorCount += 1;
         if (activityRisk <= 15) goodFactorCount += 1;
-        if (stressRisk <= 15) goodFactorCount += 1;
+        if (hydrationRisk <= 15) goodFactorCount += 1;
         if (dietRisk <= 15) goodFactorCount += 1;
 
         const bonus = goodFactorCount >= 4 ? 6 : 0;

@@ -15,7 +15,7 @@ A complete web application for predicting student health risks based on lifestyl
   - Physical activity level
   - Diet type
   - Sleep hours
-  - Stress level
+  - Hydration level
 - **Risk Assessment**: Receive personalized health risk predictions
   - Low Risk, Medium Risk, High Risk classifications
   - Detailed metrics breakdown
@@ -26,7 +26,7 @@ A complete web application for predicting student health risks based on lifestyl
 ### Admin Features
 - **Student Management**: View all registered students
 - **Data Analysis**: Monitor health risk statistics
-- **Advanced Analytics**: Track BMI trends, sleep patterns, stress levels
+- **Advanced Analytics**: Track BMI trends, sleep patterns, hydration levels
 - **User Management**: Delete or manage student accounts
 - **Visual Statistics**: Charts showing risk distribution and activity levels
 
@@ -204,11 +204,11 @@ The prediction model is **rule-based** and analyzes:
    - Moderate: 15 risk points
    - High: 5 risk points
 
-4. **Stress Level** - Mental health (15% weight)
-   - 1-3: Low (10 risk points)
-   - 4-5: Moderate (30 risk points)
-   - 6-7: High (50 risk points)
-   - 8-10: Very high (70 risk points)
+4. **Hydration Level** - Daily water intake (20% weight)
+   - 8-10: Well hydrated (10 risk points)
+   - 6-7: Moderately hydrated (30 risk points)
+   - 4-5: Low hydration (50 risk points)
+   - 1-3: Very low hydration (70 risk points)
 
 5. **Diet Type** - Nutrition quality (15% weight)
    - Balanced: 15 risk points
@@ -401,7 +401,7 @@ curl -X POST http://localhost:5000/api/submit-health-data \
     "activity_level": "Moderate",
     "diet_type": "Balanced",
     "sleep_hours": 7.5,
-    "stress_level": 5
+    "hydration_level": 5
   }'
 ```
 
