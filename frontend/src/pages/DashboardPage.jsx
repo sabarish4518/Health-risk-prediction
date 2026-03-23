@@ -21,32 +21,126 @@ const initialForm = {
 };
 
 const MEAL_TYPES = ["Breakfast", "Lunch", "Dinner", "Snacks"];
-const UNIT_TYPES = ["grams", "units"];
-const FALLBACK_FOOD_OPTIONS = [
-  { name: "Oats", calories_per_100g: 389 },
-  { name: "Cooked Rice", calories_per_100g: 130 },
-  { name: "Roti", calories_per_100g: 297 },
-  { name: "Dal", calories_per_100g: 116 },
-  { name: "Paneer", calories_per_100g: 265 },
-  { name: "Tofu", calories_per_100g: 144 },
-  { name: "Egg", calories_per_100g: 155 },
-  { name: "Chicken Breast", calories_per_100g: 165 },
-  { name: "Fish", calories_per_100g: 206 },
-  { name: "Mixed Vegetables", calories_per_100g: 65 },
-  { name: "Salad", calories_per_100g: 35 },
-  { name: "Milk", calories_per_100g: 61 },
-  { name: "Curd", calories_per_100g: 98 },
-  { name: "Banana", calories_per_100g: 89 },
-  { name: "Apple", calories_per_100g: 52 },
-  { name: "Mixed Nuts", calories_per_100g: 607 },
-  { name: "Chips", calories_per_100g: 536 },
-  { name: "Sweets", calories_per_100g: 400 },
-  { name: "Soft Drink", calories_per_100g: 41 },
-  { name: "Burger", calories_per_100g: 295 },
-  { name: "Pizza", calories_per_100g: 266 },
-  { name: "Fries", calories_per_100g: 312 },
-  { name: "Biscuits", calories_per_100g: 502 },
+function createServingOption(unit, label, gramsPerUnit) {
+  return { unit, label, grams_per_unit: gramsPerUnit };
+}
+
+function createFallbackFoodOption(name, calories, defaultUnit, gramsPerUnit, servingOptions) {
+  return {
+    name,
+    calories_per_100g: calories,
+    default_unit: defaultUnit,
+    grams_per_unit: gramsPerUnit,
+    serving_options: servingOptions,
+  };
+}
+
+const COMMON_MEASUREMENT_OPTIONS = [
+  createServingOption("grams", "Grams", 1),
+  createServingOption("kg", "Kilograms (kg)", 1000),
+  createServingOption("ml", "Milliliters (ml)", 1),
+  createServingOption("liters", "Liters (L)", 1000),
+  createServingOption("teaspoon", "1 teaspoon", 5),
+  createServingOption("tablespoon", "1 tablespoon", 15),
+  createServingOption("cup", "1 cup", 240),
+  createServingOption("glass", "1 glass", 240),
+  createServingOption("bowl", "1 bowl", 150),
+  createServingOption("plate", "1 plate", 250),
+  createServingOption("piece", "1 piece", 50),
+  createServingOption("slice", "1 slice", 100),
+  createServingOption("handful", "1 handful", 30),
+  createServingOption("packet", "1 packet", 50),
+  createServingOption("can", "1 can", 330),
+  createServingOption("bottle", "1 bottle", 500),
+  createServingOption("small", "Small serving", 100),
+  createServingOption("medium", "Medium serving", 180),
+  createServingOption("regular", "Regular serving", 180),
+  createServingOption("large", "Large serving", 260),
+  createServingOption("serving", "1 serving", 100),
 ];
+
+const FALLBACK_FOOD_OPTIONS = [
+  createFallbackFoodOption("Oats", 389, "bowl", 40, [createServingOption("grams", "Grams", 1), createServingOption("bowl", "1 bowl", 40), createServingOption("cup", "1 cup", 80)]),
+  createFallbackFoodOption("Cooked Rice", 130, "bowl", 150, [createServingOption("grams", "Grams", 1), createServingOption("bowl", "1 bowl", 150), createServingOption("cup", "1 cup", 180)]),
+  createFallbackFoodOption("Roti", 297, "piece", 35, [createServingOption("grams", "Grams", 1), createServingOption("piece", "1 piece", 35)]),
+  createFallbackFoodOption("Dal", 116, "bowl", 150, [createServingOption("grams", "Grams", 1), createServingOption("bowl", "1 bowl", 150), createServingOption("cup", "1 cup", 200)]),
+  createFallbackFoodOption("Paneer", 265, "piece", 80, [createServingOption("grams", "Grams", 1), createServingOption("piece", "1 piece", 80), createServingOption("small", "Small serving", 60), createServingOption("large", "Large serving", 120)]),
+  createFallbackFoodOption("Tofu", 144, "piece", 80, [createServingOption("grams", "Grams", 1), createServingOption("piece", "1 piece", 80), createServingOption("small", "Small serving", 60), createServingOption("large", "Large serving", 120)]),
+  createFallbackFoodOption("Egg", 155, "piece", 50, [createServingOption("grams", "Grams", 1), createServingOption("piece", "1 egg", 50)]),
+  createFallbackFoodOption("Chicken Breast", 165, "piece", 120, [createServingOption("grams", "Grams", 1), createServingOption("piece", "1 piece", 120), createServingOption("small", "Small serving", 90), createServingOption("large", "Large serving", 180)]),
+  createFallbackFoodOption("Fish", 206, "piece", 120, [createServingOption("grams", "Grams", 1), createServingOption("piece", "1 piece", 120), createServingOption("small", "Small serving", 90), createServingOption("large", "Large serving", 180)]),
+  createFallbackFoodOption("Mixed Vegetables", 65, "bowl", 100, [createServingOption("grams", "Grams", 1), createServingOption("bowl", "1 bowl", 100), createServingOption("cup", "1 cup", 120)]),
+  createFallbackFoodOption("Salad", 35, "bowl", 80, [createServingOption("grams", "Grams", 1), createServingOption("bowl", "1 bowl", 80), createServingOption("cup", "1 cup", 100)]),
+  createFallbackFoodOption("Milk", 61, "ml", 240, [createServingOption("ml", "Milliliters (ml)", 1), createServingOption("liters", "Liters (L)", 1000), createServingOption("glass", "1 glass", 240), createServingOption("cup", "1 cup", 240)]),
+  createFallbackFoodOption("Curd", 98, "bowl", 100, [createServingOption("grams", "Grams", 1), createServingOption("bowl", "1 bowl", 100), createServingOption("cup", "1 cup", 150)]),
+  createFallbackFoodOption("Banana", 89, "piece", 118, [createServingOption("grams", "Grams", 1), createServingOption("piece", "1 banana", 118), createServingOption("small", "Small banana", 90), createServingOption("large", "Large banana", 135)]),
+  createFallbackFoodOption("Apple", 52, "piece", 182, [createServingOption("grams", "Grams", 1), createServingOption("piece", "1 apple", 182), createServingOption("small", "Small apple", 150), createServingOption("large", "Large apple", 220)]),
+  createFallbackFoodOption("Mixed Nuts", 607, "handful", 30, [createServingOption("grams", "Grams", 1), createServingOption("handful", "1 handful", 30), createServingOption("small", "Small serving", 20), createServingOption("large", "Large serving", 45)]),
+  createFallbackFoodOption("Chips", 536, "packet", 30, [createServingOption("grams", "Grams", 1), createServingOption("packet", "1 packet", 30), createServingOption("small", "Small packet", 20), createServingOption("large", "Large packet", 50)]),
+  createFallbackFoodOption("Sweets", 400, "piece", 30, [createServingOption("grams", "Grams", 1), createServingOption("piece", "1 piece", 30), createServingOption("small", "Small piece", 20), createServingOption("large", "Large piece", 45)]),
+  createFallbackFoodOption("Soft Drink", 41, "ml", 330, [createServingOption("ml", "Milliliters (ml)", 1), createServingOption("liters", "Liters (L)", 1000), createServingOption("can", "1 can", 330), createServingOption("bottle", "1 bottle", 500)]),
+  createFallbackFoodOption("Burger", 295, "regular", 180, [createServingOption("grams", "Grams", 1), createServingOption("small", "Small burger", 130), createServingOption("regular", "Regular burger", 180), createServingOption("large", "Large burger", 250)]),
+  createFallbackFoodOption("Pizza", 266, "slice", 120, [createServingOption("grams", "Grams", 1), createServingOption("slice", "1 slice", 120), createServingOption("small", "Small pizza", 400), createServingOption("medium", "Medium pizza", 700), createServingOption("large", "Large pizza", 950)]),
+  createFallbackFoodOption("Fries", 312, "medium", 117, [createServingOption("grams", "Grams", 1), createServingOption("small", "Small fries", 80), createServingOption("medium", "Medium fries", 117), createServingOption("large", "Large fries", 150)]),
+  createFallbackFoodOption("Biscuits", 502, "piece", 15, [createServingOption("grams", "Grams", 1), createServingOption("piece", "1 biscuit", 15), createServingOption("small", "Small serving", 15), createServingOption("large", "Large serving", 30)]),
+];
+
+function normalizeFoodKey(value) {
+  return String(value || "").toLowerCase().trim();
+}
+
+function buildGenericFoodOption(name, calories = 120) {
+  const normalized = normalizeFoodKey(name);
+  const isLiquid = ["drink", "juice", "milk", "tea", "coffee", "shake", "smoothie", "water", "soda"].some((token) => normalized.includes(token));
+
+  if (isLiquid) {
+    return createFallbackFoodOption(name, calories, "ml", 250, [
+      createServingOption("ml", "Milliliters (ml)", 1),
+      createServingOption("liters", "Liters (L)", 1000),
+      createServingOption("glass", "1 glass", 250),
+      createServingOption("bottle", "1 bottle", 500),
+    ]);
+  }
+
+  return createFallbackFoodOption(name, calories, "grams", 100, [
+    createServingOption("grams", "Grams", 1),
+    createServingOption("small", "Small serving", 100),
+    createServingOption("medium", "Medium serving", 180),
+    createServingOption("large", "Large serving", 260),
+  ]);
+}
+
+function getFoodOptionByName(foodOptions, foodName) {
+  const normalized = normalizeFoodKey(foodName);
+  return foodOptions.find((food) => (
+    normalizeFoodKey(food?.name) === normalized
+    || (Array.isArray(food?.aliases) && food.aliases.some((alias) => normalizeFoodKey(alias) === normalized))
+  )) || null;
+}
+
+function getServingOptionsForFood(foodOptions, foodName) {
+  const selectedFood = getFoodOptionByName(foodOptions, foodName);
+  const sourceOptions = selectedFood?.serving_options?.length
+    ? selectedFood.serving_options
+    : foodName
+      ? buildGenericFoodOption(foodName).serving_options
+      : COMMON_MEASUREMENT_OPTIONS;
+
+  const mergedOptions = new Map();
+  [...sourceOptions, ...COMMON_MEASUREMENT_OPTIONS].forEach((option) => {
+    const key = String(option?.unit || "").toLowerCase().trim();
+    if (!key || mergedOptions.has(key)) return;
+    mergedOptions.set(key, option);
+  });
+  return Array.from(mergedOptions.values());
+}
+
+function getDefaultUnitForFood(foodOptions, foodName) {
+  const selectedFood = getFoodOptionByName(foodOptions, foodName);
+  if (selectedFood?.default_unit) return selectedFood.default_unit;
+  if (foodName) return buildGenericFoodOption(foodName).default_unit;
+  return "grams";
+}
 
 const DIET_CLASSIFICATIONS = [
   {
@@ -118,6 +212,16 @@ function getDietTypeInfo(dietType) {
       riskScore: 8,
     }
   );
+}
+
+function getLiveBmi(height, weight) {
+  const heightCm = Number(height || 0);
+  const weightKg = Number(weight || 0);
+  if (!heightCm || !weightKg) return null;
+  const heightM = heightCm / 100;
+  if (!heightM) return null;
+  const bmi = weightKg / (heightM * heightM);
+  return Number.isFinite(bmi) ? bmi : null;
 }
 
 function litersToHydrationLevel(liters) {
@@ -453,6 +557,8 @@ export default function DashboardPage() {
   const riskPie = getRiskPieSegments(insights);
   const dietPlan = getDietPlan(assessment, insights);
   const futureOutlook = getFutureOutlook(assessment, insights);
+  const liveBmi = getLiveBmi(form.height, form.weight);
+  const liveBmiCategory = liveBmi ? getBmiCategory(liveBmi) : "Enter height and weight";
 
   function getPieSegmentFromEvent(event) {
     if (!insights) return null;
@@ -574,7 +680,14 @@ export default function DashboardPage() {
           entries: day.entries.map((item, eIdx) => {
             if (eIdx !== entryIndex) return item;
             if (key === "meal_type") {
-              return { ...item, meal_type: value, food_item_name: "" };
+              return { ...item, meal_type: value, food_item_name: "", unit: "grams" };
+            }
+            if (key === "food_item_name") {
+              const servingOptions = getServingOptionsForFood(foodOptions, value);
+              const nextUnit = servingOptions.some((option) => option.unit === item.unit)
+                ? item.unit
+                : getDefaultUnitForFood(foodOptions, value);
+              return { ...item, food_item_name: value, unit: nextUnit };
             }
             return { ...item, [key]: value };
           }),
@@ -625,10 +738,12 @@ export default function DashboardPage() {
       const merged = new Map(prev.map((food) => [String(food.name || "").toLowerCase(), food]));
       newFoods.forEach((food) => {
         const key = String(food?.name || "").toLowerCase().trim();
-        if (!key || merged.has(key)) return;
+        if (!key) return;
         merged.set(key, {
-          name: food.name,
+          ...buildGenericFoodOption(food.name, Number(food.calories_per_100g || 120)),
+          ...food,
           calories_per_100g: Number(food.calories_per_100g || 120),
+          aliases: Array.isArray(food.aliases) ? food.aliases : [],
         });
       });
       return Array.from(merged.values());
@@ -656,7 +771,10 @@ export default function DashboardPage() {
   function getFoodSuggestions(query) {
     const search = String(query || "").toLowerCase().trim();
     const source = search
-      ? foodOptions.filter((food) => String(food.name || "").toLowerCase().includes(search))
+      ? foodOptions.filter((food) => (
+        String(food.name || "").toLowerCase().includes(search)
+        || (Array.isArray(food.aliases) && food.aliases.some((alias) => String(alias || "").toLowerCase().includes(search)))
+      ))
       : foodOptions;
     return source.slice(0, 120);
   }
@@ -836,7 +954,18 @@ export default function DashboardPage() {
                       Used for BMR-based required calorie calculation.
                     </small>
                   </div>
-                  <div className="form-group" />
+                  <div className="form-group">
+                    <label>BMI Preview:</label>
+                    <input
+                      type="text"
+                      value={liveBmi ? `${liveBmi.toFixed(1)} (${liveBmiCategory})` : ""}
+                      placeholder="Auto-calculated from height and weight"
+                      readOnly
+                    />
+                    <small className="input-helper">
+                      Updates automatically as you enter height and weight.
+                    </small>
+                  </div>
                 </div>
                 <div className="form-row">
                   <div className="form-group">
@@ -871,14 +1000,17 @@ export default function DashboardPage() {
                           <button className="btn btn-secondary" type="button" onClick={() => addFoodEntry(dayIdx)}>
                             + Add Food Item
                           </button>
-                          <button
-                            className="btn btn-danger"
-                            type="button"
-                            onClick={() => removeFoodDay(dayIdx)}
-                            disabled={form.food_days.length <= 2}
-                          >
-                            Remove Day
-                          </button>
+                          {day.day_number > 2 ? (
+                            <button
+                              className="btn btn-danger"
+                              type="button"
+                              onClick={() => removeFoodDay(dayIdx)}
+                            >
+                              Remove Day
+                            </button>
+                          ) : (
+                            <small className="input-helper">Day 1 and Day 2 are required</small>
+                          )}
                         </div>
                       </div>
                       <div className="food-intake-head">
@@ -891,6 +1023,7 @@ export default function DashboardPage() {
                       {day.entries.map((item, idx) => {
                         const rowKey = `${dayIdx}-${idx}`;
                         const suggestions = getFoodSuggestions(item.food_item_name);
+                        const unitOptions = getServingOptionsForFood(foodOptions, item.food_item_name);
                         return (
                           <div className="food-intake-row" key={`food-entry-${day.day_number}-${idx}`}>
                             <select value={item.meal_type} onChange={(e) => updateFoodEntry(dayIdx, idx, "meal_type", e.target.value)} aria-label={`Meal type for day ${day.day_number} row ${idx + 1}`}>
@@ -917,7 +1050,7 @@ export default function DashboardPage() {
                               <datalist id={`food-search-list-${rowKey}`}>
                                 {suggestions.map((food) => (
                                   <option key={`${rowKey}-${food.name}`} value={food.name}>
-                                    {`${food.name} (${food.calories_per_100g} kcal/100g)`}
+                                    {`${food.name} (${food.calories_per_100g} kcal/100g, ${food.default_unit || "grams"})`}
                                   </option>
                                 ))}
                               </datalist>
@@ -933,9 +1066,9 @@ export default function DashboardPage() {
                               aria-label={`Food quantity for day ${day.day_number} row ${idx + 1}`}
                             />
                             <select value={item.unit} onChange={(e) => updateFoodEntry(dayIdx, idx, "unit", e.target.value)} aria-label={`Food unit for day ${day.day_number} row ${idx + 1}`}>
-                              {UNIT_TYPES.map((unitType) => (
-                                <option key={unitType} value={unitType}>
-                                  {unitType}
+                              {unitOptions.map((unitOption) => (
+                                <option key={unitOption.unit} value={unitOption.unit}>
+                                  {unitOption.label}
                                 </option>
                               ))}
                             </select>

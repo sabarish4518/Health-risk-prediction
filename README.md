@@ -1,503 +1,297 @@
 # Student Health Risk Prediction System
 
-## 📋 Overview
-
-A complete web application for predicting student health risks based on lifestyle and health data. Students can register, input their health information, and receive personalized risk assessments. Admins can monitor all students' health data and view detailed analytics.
+A full-stack web application for student health assessment with role-based access:
+- **Students** can submit lifestyle/food data, get risk prediction, track history, and receive admin feedback notifications.
+- **Admins** can review each student's submitted assessment history and send targeted feedback.
 
 ---
 
-## ✨ Features
+## Table of Contents
+- [What This Project Does](#what-this-project-does)
+- [Tech Stack](#tech-stack)
+- [Core Features](#core-features)
+- [Architecture](#architecture)
+- [Project Structure](#project-structure)
+- [Setup Guide](#setup-guide)
+- [Environment Variables](#environment-variables)
+- [Default Credentials](#default-credentials)
+- [API Overview](#api-overview)
+- [Risk and Diet Assessment Logic](#risk-and-diet-assessment-logic)
+- [Admin Feedback Notification Flow](#admin-feedback-notification-flow)
+- [Troubleshooting](#troubleshooting)
+
+---
+
+## What This Project Does
+
+The system collects student health and dietary behavior, computes a risk profile, and presents insights with visualizations.
+
+The latest implementation includes:
+- Multi-day food intake logging (minimum 2 days required)
+- Searchable food catalog with nutrition lookup support
+- Average calorie intake/day based assessment
+- Pie-chart based risk visualization with hover tooltip
+- Separate **Student** and **Admin** login flows
+- Admin-to-student feedback notifications
+
+---
+
+## Tech Stack
+
+### Frontend
+- React 19
+- React Router DOM
+- Vite
+- Plain CSS
+
+### Backend
+- Node.js
+- Express.js
+- JWT (`jsonwebtoken`) for authentication
+- Password hashing (`bcryptjs`)
+- CORS + dotenv
+
+### Database
+- MySQL (via `mysql2/promise`)
+
+### External Data Integration
+- OpenFoodFacts search API (used to expand food suggestions)
+
+---
+
+## Core Features
 
 ### Student Features
-- **User Registration**: Create a secure account with email verification
-- **Health Data Input**: Submit comprehensive health and lifestyle information
-  - Body measurements (Height, Weight)
-  - Physical activity level
-  - Diet type
-  - Sleep hours
-  - Hydration level
-- **Risk Assessment**: Receive personalized health risk predictions
-  - Low Risk, Medium Risk, High Risk classifications
-  - Detailed metrics breakdown
-  - Personalized recommendations
-- **Visual Results**: Interactive charts and detailed metric displays
-- **History Tracking**: View past assessments and track progress
+- Register account (DB mode)
+- Student login
+- Submit health metrics and food intake
+- Mandatory Day 1 + Day 2 food entry before assessment
+- Water intake input in liters/day
+- View risk results and prediction charts
+- View personal assessment history
+- View admin feedback notifications and mark them as read
 
 ### Admin Features
-- **Student Management**: View all registered students
-- **Data Analysis**: Monitor health risk statistics
-- **Advanced Analytics**: Track BMI trends, sleep patterns, hydration levels
-- **User Management**: Delete or manage student accounts
-- **Visual Statistics**: Charts showing risk distribution and activity levels
+- Admin login
+- View all students
+- Inspect each student individually
+- Review student assessment history
+- Send feedback linked to a specific assessment record
+- Track whether feedback is read/unread
 
 ---
 
-## 🛠️ Tech Stack
+## Architecture
 
-**Frontend:**
-- HTML5
-- CSS3 (Responsive Design)
-- JavaScript (Vanilla - No Frameworks)
-- Fetch API for backend communication
-- Canvas API for charts
+### Frontend app
+- Route protection by role:
+  - `/dashboard` -> student only
+  - `/admin-dashboard` -> admin only
+- Auth data and role stored in localStorage
+- API base URL from `VITE_API_BASE_URL` (defaults to `http://localhost:5000/api`)
 
-**Backend:**
-- Node.js 14+
-- Express.js (Web Framework)
-- cors (Cross-Origin Support)
-- jsonwebtoken (JWT Authentication)
-- bcryptjs (Password Hashing)
-- mysql2 (Database Driver)
+### Backend API
+- JWT middleware validates token (`tokenRequired`)
+- Role guard middleware for admin-only routes (`adminRequired`)
+- Quick mode available for fast demo without DB
+- DB mode includes table creation/migrations on startup
 
-**Database:**
-- MySQL 5.7+ (Relational Database)
+### Database model (high level)
+- `students`
+- `admins`
+- `health_data`
+- `student_feedback`
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
-```
+```text
 Student-Health-Risk-Prediction-System/
-│
-├── frontend/
-│   ├── index.html          # Landing page
-│   ├── login.html          # Login page
-│   ├── register.html       # Registration page
-│   ├── dashboard.html      # Student dashboard
-│   ├── admin.html          # Admin dashboard
-│   ├── css/
-│   │   └── style.css       # All styling
-│   ├── js/
-│   │   ├── auth.js         # Authentication logic
-│   │   ├── student.js      # Student dashboard logic
-│   │   └── admin.js        # Admin dashboard logic
-│
-├── backend/
-│   ├── app.js              # Express.js main application
-│   ├── model.js            # Health risk prediction model
-│   ├── database.js         # Database operations
-│   ├── auth.js             # Authentication & security
-│   ├── package.json        # Node.js dependencies
-│
-└── README.md               # This file
+|-- backend/
+|   |-- app.js
+|   |-- auth.js
+|   |-- calorieAssessment.js
+|   |-- database.js
+|   |-- model.js
+|   |-- package.json
+|   |-- .env / .env.example
+|
+|-- frontend/
+|   |-- src/
+|   |   |-- App.jsx
+|   |   |-- api.js
+|   |   |-- authStorage.js
+|   |   |-- config.js
+|   |   |-- styles.css
+|   |   |-- components/TopNav.jsx
+|   |   `-- pages/
+|   |       |-- HomePage.jsx
+|   |       |-- LoginPage.jsx
+|   |       |-- RegisterPage.jsx
+|   |       |-- DashboardPage.jsx
+|   |       `-- AdminPage.jsx
+|   `-- package.json
+|
+`-- README.md
 ```
 
 ---
 
-## 🚀 Getting Started
+## Setup Guide
 
-### Prerequisites
+## 1) Backend
 
-1. **Node.js 14+** - [Download](https://nodejs.org/)
-2. **npm** (comes with Node.js)
-3. **MySQL 5.7+** - [Download](https://dev.mysql.com/downloads/mysql/)
-4. **Git** (Optional) - [Download](https://git-scm.com/)
-
-### Step 1: Set Up MySQL Database
-
-1. Install MySQL Server if not already installed
-2. Start MySQL service
-3. Create the database (the application will create tables automatically):
-
-```bash
-# Open MySQL Command Line or MySQL Workbench
-mysql -u root -p
-
-# Create database
-CREATE DATABASE student_health_db;
-EXIT;
-```
-
-### Step 2: Set Up Backend
-
-1. Navigate to backend directory:
 ```bash
 cd backend
-```
-
-2. Install Node.js dependencies:
-```bash
 npm install
 ```
 
-3. Create `.env` file in backend directory (copy from `.env.example`):
+Copy env template and configure:
+
 ```bash
-cp .env.example .env
+# Windows PowerShell
+Copy-Item .env.example .env
 ```
 
-4. Configure database connection in `.env`:
-```
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_mysql_password
-DB_NAME=student_health_db
-DB_PORT=3306
-```
+Start backend:
 
-5. Run the Express application:
 ```bash
 npm start
 ```
 
-You should see:
-```
-============================================================
-Student Health Risk Prediction System
-============================================================
-✓ System ready!
-============================================================
+The API runs on `http://localhost:5000` by default.
 
-Server running at: http://localhost:5000
-```
-
-### Step 3: Access Frontend
-
-Open your web browser and navigate to:
-```
-file:///path/to/frontend/index.html
-```
-
-Or use a simple HTTP server to serve files:
-```bash
-# Install http-server globally
-npm install -g http-server
-
-# In frontend directory
-http-server
-# Then visit: http://localhost:8080
-```
-
----
-
-## 🔐 Default Admin Credentials
-
-After first run, a default admin account is created:
-
-- **Username**: `admin`
-- **Password**: `admin123`
-
-⚠️ **IMPORTANT**: Change this password immediately in the database for security!
-
----
-
-## 📊 Health Risk Prediction Model
-
-The prediction model is **rule-based** and analyzes:
-
-### Factors Considered
-
-1. **BMI (Body Mass Index)** - Weight distribution (30% weight)
-   - < 18.5: Underweight (30 risk points)
-   - 18.5-24.9: Healthy (10 risk points)
-   - 25-29.9: Overweight (40 risk points)
-   - ≥ 30: Obese (60 risk points)
-
-2. **Sleep Hours** - Sleep quality (20% weight)
-   - 7-9 hours: Optimal (10 risk points)
-   - 6-7 or 9-10 hours: Slightly off (30 risk points)
-   - 5-6 or 10-11 hours: Poor (50 risk points)
-   - < 5 or > 11 hours: Very poor (70 risk points)
-
-3. **Physical Activity** - Exercise frequency (20% weight)
-   - Sedentary: 60 risk points
-   - Light: 35 risk points
-   - Moderate: 15 risk points
-   - High: 5 risk points
-
-4. **Hydration Level** - Daily water intake (20% weight)
-   - 8-10: Well hydrated (10 risk points)
-   - 6-7: Moderately hydrated (30 risk points)
-   - 4-5: Low hydration (50 risk points)
-   - 1-3: Very low hydration (70 risk points)
-
-5. **Diet Type** - Nutrition quality (15% weight)
-   - Balanced: 15 risk points
-   - Vegetarian: 10 risk points
-   - High Sugar: 55 risk points
-   - High Fat: 50 risk points
-
-### Risk Classification
-
-- **Low Risk**: Score < 25
-- **Medium Risk**: Score 25-44
-- **High Risk**: Score ≥ 45
-
----
-
-## 🔌 API Endpoints
-
-### Authentication
-```
-POST /api/register          # Register new student
-POST /api/login             # Login (student or admin)
-```
-
-### Student Endpoints
-```
-POST /api/submit-health-data    # Submit health assessment
-GET  /api/get-health-data       # Get latest assessment
-GET  /api/get-history           # Get assessment history
-```
-
-### Admin Endpoints
-```
-GET    /api/admin/users         # Get all students
-GET    /api/admin/student/<id>  # Get student details
-GET    /api/admin/statistics    # Get risk statistics
-GET    /api/admin/analytics     # Get detailed analytics
-DELETE /api/admin/delete-user/<id>  # Delete student
-```
-
-### Health Check
-```
-GET /api/health             # API health check
-```
-
----
-
-## 📱 Usage Guide
-
-### For Students
-
-1. **Register**: Click "Register" and fill in your details
-2. **Login**: Use your credentials to log in
-3. **Enter Health Data**: 
-   - Go to "Enter Health Data" section
-   - Fill in all health metrics
-   - Click "Submit & Get Risk Assessment"
-4. **View Results**: 
-   - See your risk level in the "My Results" section
-   - Review personalized recommendations
-   - Check historical data in "Health History"
-
-### For Admins
-
-1. **Login**: Use admin credentials on login page
-2. **View Students**: "Students" tab shows all registered students
-3. **View Statistics**: "Statistics" tab shows risk distribution
-4. **Analyze Data**: "Analytics" tab shows detailed health metrics
-5. **Manage Users**: Delete students if needed
-
----
-
-## 🔒 Security Features
-
-✓ **Password Hashing**: bcrypt with salt  
-✓ **JWT Authentication**: Secure token-based auth  
-✓ **CORS Protection**: Cross-origin request handling  
-✓ **Email Validation**: Format verification  
-✓ **Password Strength**: Minimum requirements enforced  
-✓ **Token Expiration**: 7-day validity  
-✓ **Admin Authorization**: Role-based access control  
-
----
-
-## 🐛 Troubleshooting
-
-### MySQL Connection Error
-```
-Error: Can't connect to MySQL server
-```
-**Solution**: 
-- Ensure MySQL is running
-- Check credentials in `database.py`
-- Verify database `student_health_db` exists
-
-### Port 5000 Already in Use
-```
-OSError: [Errno 48] Address already in use
-```
-**Solution**:
-- Change port: Edit `app.py` last line from `port=5000` to `port=5001`
-- Or kill process using port 5000
-
-### CORS Errors in Frontend
-```
-Access to XMLHttpRequest blocked by CORS policy
-```
-**Solution**:
-- Flask-CORS is enabled in `app.py`
-- Ensure you're accessing from correct URL
-- Check browser console for specific errors
-
-### Database Tables Not Creating
-**Solution**:
-- Check MySQL user permissions
-- Run app.py again - tables should auto-create
-- Manually create tables using provided SQL
-
----
-
-## 📈 Performance Metrics
-
-- **Response Time**: < 500ms per request
-- **Database Queries**: Optimized with indices
-- **UI Load Time**: < 2 seconds
-- **Support**: ~100 concurrent users
-
----
-
-## 🔄 How to Switch Database
-
-To use SQLite instead of MySQL:
-
-1. Install sqlite3:
-```bash
-npm install sqlite3
-```
-
-2. Update `database.js` with SQLite connection:
-```javascript
-const sqlite3 = require('sqlite3');
-// Database configuration for SQLite
-```
-
-To use PostgreSQL:
-
-Install postgres driver:
-```bash
-npm install pg
-```
-
-Update `database.js` with PostgreSQL connection.
-
----
-
-## 📝 Example Requests
-
-### Register a Student
-```bash
-curl -X POST http://localhost:5000/api/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "john_doe",
-    "email": "john@example.com",
-    "password": "Pass123",
-    "full_name": "John Doe",
-    "age": 20,
-    "gender": "Male"
-  }'
-```
-
-### Login
-```bash
-curl -X POST http://localhost:5000/api/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "john_doe",
-    "password": "Pass123",
-    "user_type": "student"
-  }'
-```
-
-### Submit Health Data
-```bash
-curl -X POST http://localhost:5000/api/submit-health-data \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{
-    "height": 170,
-    "weight": 75,
-    "activity_level": "Moderate",
-    "diet_type": "Balanced",
-    "sleep_hours": 7.5,
-    "hydration_level": 5
-  }'
-```
-
----
-
-## 🎓 Learning Outcomes
-
-This project teaches:
-- Full-stack web development
-- REST API design
-- Database modeling
-- Authentication & Security
-- Frontend-Backend communication
-- HTML/CSS/JavaScript fundamentals
-- Python Flask framework
-- Machine Learning basics (prediction logic)
-
----
-
-## 📄 License
-
-This project is created for educational purposes as a college final-year project.
-
----
-
-## 👨‍💻 Author Notes
-
-This is a **beginner-friendly** project suitable for:
-- Learning full-stack development
-- Understanding REST APIs
-- Database design
-- Basic ML prediction models
-- Authentication systems
-
-All code is **well-commented** and **easy to modify**.
-
----
-
-## 📞 Support
-
-For issues or questions:
-1. Check the Troubleshooting section
-2. Review code comments in source files
-3. Check Flask/MySQL documentation
-4. Verify all dependencies are installed
-
----
-
-## ✅ Checklist Before Submission
-
-- [ ] MySQL database is running
-- [ ] All files are in correct directories
-- [ ] Backend dependencies installed (`pip install -r requirements.txt`)
-- [ ] `database.py` MySQL credentials are correct
-- [ ] Backend running on port 5000 (`python app.py`)
-- [ ] Frontend can be accessed in browser
-- [ ] Can register a new student account
-- [ ] Can login and submit health data
-- [ ] Admin dashboard loads and shows data
-- [ ] Charts and analytics display correctly
-- [ ] All code is well commented
-
----
-
-**Happy Learning! 🎉**
-
----
-
-## 🚀 Quick Start Command Line
+## 2) Frontend
 
 ```bash
-# 1. Setup Database
-mysql -u root -p -e "CREATE DATABASE student_health_db;"
-
-# 2. Navigate to backend
-cd backend
-
-# 3. Install Node.js Dependencies
+cd frontend
 npm install
-
-# 4. Setup environment
-cp .env.example .env
-
-# 5. Update Database credentials in .env
-# DB_PASSWORD=your_mysql_password
-
-# 6. Run Backend Server
-npm start
-
-# 7. Open in Browser
-# Frontend: file:///path/to/frontend/index.html
-# Backend API: http://localhost:5000/api/health
+npm run dev
 ```
+
+Vite dev server will print local URL (commonly `http://localhost:5173`).
 
 ---
 
-**Version**: 1.0  
-**Created**: February 2026  
-**Last Updated**: February 2026
+## Environment Variables
+
+Backend (`backend/.env`):
+
+- `PORT` (default: `5000`)
+- `NODE_ENV`
+- `SECRET_KEY` (JWT signing key)
+- `QUICK_LOGIN_ONLY` (`true`/`false`)
+- `QUICK_LOGIN_USERNAME`, `QUICK_LOGIN_PASSWORD`
+- `QUICK_ADMIN_USERNAME`, `QUICK_ADMIN_PASSWORD` (optional; defaults used if absent)
+- `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_PORT`
+- `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_FULL_NAME` (used in DB mode default admin creation)
+
+Frontend (`frontend/.env` optional):
+
+- `VITE_API_BASE_URL` (default: `http://localhost:5000/api`)
+
+---
+
+## Default Credentials
+
+### Quick mode (`QUICK_LOGIN_ONLY=true`)
+- Student: `student` / `student123`
+- Admin: `admin` / `admin123` (unless overridden via `QUICK_ADMIN_*`)
+
+### DB mode (`QUICK_LOGIN_ONLY=false`)
+- Student: register via `/register`
+- Admin: auto-created from `ADMIN_USERNAME` / `ADMIN_PASSWORD` on startup (if missing)
+
+---
+
+## API Overview
+
+### Public
+- `POST /api/register`
+- `POST /api/login` (supports `user_type: student|admin`)
+- `GET /api/health`
+
+### Student (JWT + student role)
+- `GET /api/food-options`
+- `GET /api/food-search?q=...`
+- `POST /api/submit-health-data`
+- `GET /api/get-health-data`
+- `GET /api/get-history`
+- `GET /api/my-feedback`
+- `POST /api/my-feedback/:feedbackId/read`
+
+### Admin (JWT + admin role)
+- `GET /api/admin/students`
+- `GET /api/admin/students/:studentId`
+- `POST /api/admin/feedback`
+
+---
+
+## Risk and Diet Assessment Logic
+
+### Inputs considered
+- Height, weight (BMI derived)
+- Activity level
+- Sleep hours
+- Hydration level (derived from liters/day input on frontend)
+- Food entries by day (meal type, item, quantity, unit)
+
+### Diet processing
+- Validates food items against nutrition dataset
+- Converts quantity/units to grams where needed
+- Computes daily calories/macros
+- Uses **average calories per day** across tracked days
+- Classifies diet pattern (e.g., Balanced, High Calorie Diet, Low Protein, etc.)
+
+### Risk prediction
+- Rule-based model in `backend/model.js`
+- Produces:
+  - Risk level
+  - Risk score
+  - Metric breakdown values used in frontend insights
+
+---
+
+## Admin Feedback Notification Flow
+
+1. Student submits assessment -> health record saved.
+2. Admin opens student profile/history.
+3. Admin sends feedback linked to a specific `health_data_id`.
+4. Feedback stored in `student_feedback` as unread (`is_read = 0`).
+5. Student login returns unread count.
+6. Student dashboard lists feedback notifications.
+7. Student marks feedback read -> `is_read = 1`.
+
+---
+
+## Troubleshooting
+
+### Invalid admin credentials
+- Confirm login tab is set to **Admin**.
+- In quick mode, use quick admin credentials.
+- Restart backend after env changes.
+
+### Registration disabled
+- Happens when `QUICK_LOGIN_ONLY=true`.
+- Set `QUICK_LOGIN_ONLY=false` to enable normal registration + DB mode.
+
+### DB connection errors
+- Verify MySQL is running and credentials are correct in `.env`.
+- Ensure database exists (`student_health_db` by default).
+
+### Food search sometimes limited
+- OpenFoodFacts call may fail due to network/API rate limits.
+- App still falls back to local nutrition dataset.
+
+---
+
+## Notes for Staff Demo
+
+For a quick demonstration without DB setup:
+1. Keep `QUICK_LOGIN_ONLY=true`
+2. Start backend and frontend
+3. Login as student -> submit health data
+4. Login as admin -> review student history -> send feedback
+5. Login back as student -> verify feedback notification appears
+

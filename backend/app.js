@@ -61,6 +61,39 @@ function resolveEntryDayNumber(entry) {
     return 1;
 }
 
+function buildExternalFoodOption(name, caloriesPer100g) {
+    const normalized = String(name || '').toLowerCase();
+    const isLiquid = ['drink', 'juice', 'milk', 'tea', 'coffee', 'shake', 'smoothie', 'water', 'soda'].some((token) => normalized.includes(token));
+
+    if (isLiquid) {
+        return {
+            name,
+            calories_per_100g: caloriesPer100g,
+            default_unit: 'ml',
+            grams_per_unit: 250,
+            serving_options: [
+                { unit: 'ml', label: 'Milliliters (ml)', grams_per_unit: 1 },
+                { unit: 'liters', label: 'Liters (L)', grams_per_unit: 1000 },
+                { unit: 'glass', label: '1 glass', grams_per_unit: 250 },
+                { unit: 'bottle', label: '1 bottle', grams_per_unit: 500 }
+            ]
+        };
+    }
+
+    return {
+        name,
+        calories_per_100g: caloriesPer100g,
+        default_unit: 'grams',
+        grams_per_unit: 100,
+        serving_options: [
+            { unit: 'grams', label: 'Grams', grams_per_unit: 1 },
+            { unit: 'small', label: 'Small serving', grams_per_unit: 100 },
+            { unit: 'medium', label: 'Medium serving', grams_per_unit: 180 },
+            { unit: 'large', label: 'Large serving', grams_per_unit: 260 }
+        ]
+    };
+}
+
 // ==================== AUTHENTICATION MIDDLEWARE ====================
 
 /**
@@ -298,6 +331,7 @@ app.get('/api/food-search', tokenRequired, asyncHandler(async (req, res) => {
 
     const localFoods = getFoodNutritionOptions().filter((food) =>
         String(food.name || '').toLowerCase().includes(cacheKey)
+        || (Array.isArray(food.aliases) && food.aliases.some((alias) => String(alias || '').toLowerCase().includes(cacheKey)))
     );
 
     let externalFoods = [];
@@ -314,12 +348,7 @@ app.get('/api/food-search', tokenRequired, asyncHandler(async (req, res) => {
                         const name = String(item?.product_name || '').trim();
                         if (!name) return null;
                         const kcal = Number(item?.nutriments?.['energy-kcal_100g']);
-                        return {
-                            name,
-                            calories_per_100g: Number.isFinite(kcal) && kcal > 0 ? kcal : 120,
-                            default_unit: 'grams',
-                            grams_per_unit: 100
-                        };
+                        return buildExternalFoodOption(name, Number.isFinite(kcal) && kcal > 0 ? kcal : 120);
                     })
                     .filter(Boolean);
             }
