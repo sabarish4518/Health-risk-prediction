@@ -28,7 +28,11 @@ const DEFAULT_ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const DEFAULT_ADMIN_FULL_NAME = process.env.ADMIN_FULL_NAME || 'System Admin';
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: [
+  'https://risk-predict-here.onrender.com',
+  'http://localhost:5173',
+  'http://localhost:3000'
+] }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

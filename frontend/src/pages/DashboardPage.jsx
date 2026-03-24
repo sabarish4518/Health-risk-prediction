@@ -330,6 +330,13 @@ function getCalorieDeltaBadgeClass(delta) {
   return "badge success";
 }
 
+function formatSignedCalories(value, suffix = "kcal") {
+  const numericValue = Number(value || 0);
+  const roundedValue = Math.abs(numericValue).toFixed(0);
+  const sign = numericValue > 0 ? "+" : numericValue < 0 ? "\u2212" : "";
+  return `${sign}${roundedValue} ${suffix}`;
+}
+
 function getAssessmentInsights(assessment) {
   if (!assessment) return null;
 
@@ -337,6 +344,7 @@ function getAssessmentInsights(assessment) {
   const sleepHours = Number(assessment.sleep_hours || 0);
   const hydrationLevel = Number(assessment.hydration_level || 0);
   const riskLevel = String(assessment.risk_level || "").toLowerCase();
+  const backendRiskScore = Number(assessment.risk_score);
 
   const baseRiskScore = riskLevel.includes("high") ? 60 : riskLevel.includes("medium") ? 40 : 20;
   const bmiRiskScore = bmi >= 30 || bmi < 18.5 ? 15 : bmi >= 25 ? 8 : 2;
@@ -345,17 +353,25 @@ function getAssessmentInsights(assessment) {
   const activityRiskScore = getActivityScore(assessment.activity_level);
   const dietRiskScore = getDietScore(assessment.detected_diet_pattern || assessment.diet_type);
 
-  const totalRisk = Math.min(
+  const fallbackRisk = Math.min(
     95,
     Math.round(baseRiskScore + bmiRiskScore + sleepRiskScore + hydrationRiskScore + activityRiskScore + dietRiskScore),
   );
+  const totalRisk = Math.max(
+    0,
+    Math.min(100, Number.isFinite(backendRiskScore) ? Math.round(backendRiskScore) : fallbackRisk),
+  );
 
-  const severeOutcomeRisk = Math.min(40, Math.max(3, Math.round(totalRisk * 0.35)));
+  const severeOutcomeRisk = totalRisk > 0
+    ? Math.min(totalRisk, Math.min(40, Math.max(3, Math.round(totalRisk * 0.35))))
+    : 0;
+  const manageableRisk = Math.max(0, totalRisk - severeOutcomeRisk);
   const healthyShare = Math.max(0, 100 - totalRisk);
 
   return {
     bmiCategory: getBmiCategory(bmi),
     totalRisk,
+    manageableRisk,
     severeOutcomeRisk,
     healthyShare,
   };
@@ -593,17 +609,17 @@ export default function DashboardPage() {
 
     if (anglePercent <= totalRiskEnd) {
       segment = {
-        label: "Overall Risk",
-        value: insights.totalRisk,
+        label: "Current Risk",
+        value: riskPie.riskWithoutSevere,
         colorClass: "dot-risk",
-        description: "Current total health-risk intensity.",
+        description: "Risk share outside the severe-outcome portion.",
       };
     } else if (anglePercent <= severeEnd) {
       segment = {
         label: "Severe Outcome Indicator",
-        value: insights.severeOutcomeRisk,
+        value: riskPie.severeWithinRisk,
         colorClass: "dot-severe",
-        description: "Estimated severe outcome signal.",
+        description: "Subset of the risk index with higher potential severity.",
       };
     }
 
@@ -1118,10 +1134,7 @@ export default function DashboardPage() {
                     </article>
                     <article className="kpi-card">
                       <span>Calorie Difference</span>
-                      <strong>
-                        {Number(assessment.calorie_difference || 0) > 0 ? "+" : ""}
-                        {Number(assessment.calorie_difference || 0).toFixed(0)} kcal
-                      </strong>
+                      <strong>{formatSignedCalories(assessment.calorie_difference)}</strong>
                     </article>
                     <article className="kpi-card">
                       <span>Diet Classification</span>
@@ -1169,7 +1182,7 @@ export default function DashboardPage() {
                         ) : null}
                       </div>
                       <div className="risk-legend">
-                        <div><span className="dot dot-risk" /> Overall Risk: {insights.totalRisk}%</div>
+                        <div><span className="dot dot-risk" /> Current Risk: {insights.manageableRisk}%</div>
                         <div><span className="dot dot-severe" /> Severe Outcome Indicator: {insights.severeOutcomeRisk}%</div>
                         <div><span className="dot dot-healthy" /> Healthy Share: {insights.healthyShare}%</div>
                       </div>
@@ -1229,8 +1242,7 @@ export default function DashboardPage() {
                           <td>Calorie Difference</td>
                           <td>
                             <span className={getCalorieDeltaBadgeClass(assessment.calorie_difference)}>
-                              {Number(assessment.calorie_difference || 0) > 0 ? "+" : ""}
-                              {Number(assessment.calorie_difference || 0).toFixed(0)} kcal/day
+                              {formatSignedCalories(assessment.calorie_difference, "kcal/day")}
                             </span>
                           </td>
                           <td>Positive means excess intake, negative means deficit</td>
